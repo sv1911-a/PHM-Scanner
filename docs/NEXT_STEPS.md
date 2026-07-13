@@ -1,20 +1,28 @@
-# SPECTRE Roadmap
+# Spectre Roadmap
 
-The roadmap is now centered around one idea:
+The main goal is still:
 
 ```bash
 spectre analyze <target>
 ```
 
-SPECTRE should detect the target and do the right thing.
+Spectre should detect the target, run useful first-pass checks, summarize the results, and suggest what to investigate next.
 
-The user should not need to understand internal modules.
+## How to choose what to build
+
+Every new feature should answer yes to at least one question:
+
+- Does it save time?
+- Does it reduce manual work?
+- Does it make the report clearer?
+- Does it highlight something important?
+- Does it help the user know what to do next?
+
+If not, reconsider it.
 
 ## Priority 1: Improve `spectre analyze`
 
-Current status:
-
-`analyze` can detect:
+Current detection supports:
 
 - files
 - domains
@@ -26,51 +34,54 @@ Current status:
 - GitHub repositories
 - encoded text
 
-Current reports also include rule-based suggested next steps.
+Next:
 
-Next steps:
+- improve target scoring
+- show better alternative interpretations
+- choose better default checks
+- add `--fast`
+- add `--deep`
+- avoid slow checks unless useful
 
-- make detection more accurate
-- make next-step suggestions more useful
-- make reports cleaner
-- choose better default checks for each target type
-- show clearer messages like `Detected: PDF document` or `Detected: domain`
-- avoid running slow checks unless they are useful
-- add a `--fast` mode later
-- add a `--deep` mode later
+## Priority 2: Improve reports
 
-## Priority 2: Make file analysis better
+Current reports show:
 
-Current status:
+- detected target type
+- summary
+- findings
+- next steps
 
-SPECTRE can analyze files with:
+Next:
+
+- better summaries for websites
+- better summaries for files
+- better summaries for GitHub repositories
+- cleaner HTML reports
+- timeline sections when useful
+- PDF export later
+
+## Priority 3: Improve file analysis
+
+Current:
 
 - magic bytes
 - hashes
 - entropy
 - strings
-- extension mismatch checks
+- extension mismatch check
 
-Next steps:
+Next:
 
-- add more file signatures
-- detect embedded files
-- improve string extraction
-- extract URLs, emails, hashes, domains, and JWTs from strings
-- improve suspicious file scoring
+- more file signatures
+- embedded file detection
+- better string extraction
+- URL/email/domain extraction from strings
+- suspicious pattern detection
 
-## Priority 3: Add metadata analysis
+## Priority 4: Metadata checks
 
-Goal:
-
-```bash
-spectre analyze photo.jpg
-spectre analyze report.pdf
-```
-
-SPECTRE should automatically check metadata.
-
-Planned features:
+Planned:
 
 - EXIF parser
 - GPS extraction
@@ -78,139 +89,95 @@ Planned features:
 - Office document metadata parser
 - timestamps
 - author fields
-- embedded URLs and emails
 
-## Priority 4: Add archive analysis
+## Priority 5: Archive checks
 
-Goal:
+Planned:
 
-```bash
-spectre analyze sample.zip
-```
+- ZIP listing
+- TAR listing
+- GZIP handling
+- hashes for files inside archives
+- nested file analysis
+- suspicious file detection
 
-SPECTRE should inspect archives safely.
+## Priority 6: Binary checks
 
-Planned features:
-
-- list archive contents
-- hash archive members
-- detect suspicious files inside archives
-- analyze nested files
-- extract useful results from nested files
-
-## Priority 5: Add binary analysis
-
-Goal:
-
-```bash
-spectre analyze suspicious.exe
-```
-
-SPECTRE should recognize and analyze binaries.
-
-Planned features:
+Planned:
 
 - PE parser
 - ELF parser
 - Mach-O parser
 - imports
 - exports
-- symbols
 - sections
 - section entropy
 - compiler clues
 - packer clues
 - interesting strings
-- URLs and domains inside binaries
 
-## Priority 6: Add web analysis
+## Priority 7: Web checks
 
-Goal:
+Planned:
 
-```bash
-spectre analyze https://example.com
-```
-
-SPECTRE should inspect websites.
-
-Planned features:
-
-- HTTP headers
-- cookies
 - robots.txt
 - sitemap.xml
-- HTML links
-- JavaScript endpoints
-- security headers
-- technology detection
+- cookies
+- JavaScript endpoint extraction
+- security header checks
+- interesting parameters
+- authentication clues
 
-## Priority 7: Clean reports
+## Priority 8: Domain and IP checks
 
-Reports should be easy to read.
+Current:
 
-Next steps:
+- DNS
+- WHOIS
+- RDAP
+- reverse DNS
+- ASN
+- TLS certificates
+- Certificate Transparency
 
-- show the detected target type
-- show the most important findings first
-- group results by type
-- show relationships clearly
-- add a timeline section when useful
-- add a simple summary
-- improve HTML reports
-- add PDF export later
+Next:
 
-## Priority 8: Better saved investigations
+- better DNS summaries
+- better RDAP ownership summaries
+- better CT log cleanup
+- verify subdomain leads
+- better infrastructure summaries
 
-Current status:
+## Priority 9: GitHub checks
 
-SPECTRE can save full reports in SQLite.
+Current:
 
-Next steps:
+- users
+- organizations
+- repositories
+- search
+- contributors
+- commits
+- redacted secret indicators
 
-- save results separately
-- save relationships separately
-- search old investigations
-- compare two investigations
-- export graphs
+Next:
 
-## Priority 9: Keep advanced commands
-
-Advanced users should still be able to run direct commands:
-
-```bash
-spectre dns example.com
-spectre file sample.exe
-spectre hash <hash>
-spectre crypto <text>
-```
-
-But these should be optional.
-
-The default should remain:
-
-```bash
-spectre analyze <target>
-```
+- repository timeline
+- dependency file parsing
+- GitHub Actions checks
+- Docker/Terraform/Kubernetes clues
+- better secret rule configuration
 
 ## Lower priority
 
 These can wait:
 
-- Shodan integration
-- Censys integration
-- SecurityTrails integration
-- HackerTarget integration
-- external tool integrations
 - GUI
-
-## Not a priority yet
-
-Do not focus on these yet:
-
+- Shodan
+- Censys
+- SecurityTrails
+- external tool integrations
 - AI summaries
 - LLM agents
-- multi-agent systems
-- vector databases
-- RAG pipelines
 
-First, make SPECTRE useful with one command.
+First, make the default command genuinely useful.

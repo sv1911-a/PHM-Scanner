@@ -2,7 +2,7 @@
 
 Thanks for wanting to contribute.
 
-SPECTRE is a cybersecurity workflow accelerator. The main user experience should stay simple:
+SPECTRE is focused on simple first-pass cybersecurity analysis. The main user experience should stay simple:
 
 ```bash
 spectre analyze <target>
@@ -19,7 +19,7 @@ Before adding a feature, ask:
 3. Does this make the report clearer?
 4. Does this help the user know what to investigate next?
 5. Can this be implemented natively instead of wrapping another tool?
-6. Is the result deterministic and explainable?
+6. Is the result repeatable and explainable?
 
 Avoid features that are only technically interesting but do not improve the workflow.
 

@@ -61,12 +61,13 @@ def _category_from_name(name: str) -> Category:
 def _add_common_options(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("--format", choices=sorted(REPORTERS), default="terminal", help="report output format")
     parser.add_argument("--output", "-o", help="write rendered report to a file instead of stdout")
-    parser.add_argument("--plugin", action="append", dest="plugins", help="run only a named plugin; may be repeated")
-    parser.add_argument("--timeout", type=float, default=8.0, help="network timeout for passive lookups")
-    parser.add_argument("--max-workers", type=int, default=4, help="maximum passive plugin workers")
-    parser.add_argument("--cache", action="store_true", help="enable source-adapter caching")
-    parser.add_argument("--cache-ttl", type=int, default=3600, help="source-adapter cache TTL in seconds")
-    parser.add_argument("--cache-db", default="investigations/source_cache.db", help="SQLite database path for source-adapter cache")
+    parser.add_argument("--verbose", action="store_true", help="show plugin names and raw evidence details")
+    parser.add_argument("--plugin", action="append", dest="plugins", help="run a specific internal check; may be repeated")
+    parser.add_argument("--timeout", type=float, default=8.0, help="network timeout for lookups")
+    parser.add_argument("--max-workers", type=int, default=4, help="maximum parallel checks")
+    parser.add_argument("--cache", action="store_true", help="cache public lookup results")
+    parser.add_argument("--cache-ttl", type=int, default=3600, help="lookup cache TTL in seconds")
+    parser.add_argument("--cache-db", default="investigations/source_cache.db", help="SQLite database path for lookup cache")
     parser.add_argument("--save", action="store_true", help="persist the investigation report to SQLite")
     parser.add_argument("--db", default="investigations/spectre.db", help="SQLite database path for --save")
 
@@ -74,7 +75,7 @@ def _add_common_options(parser: argparse.ArgumentParser) -> None:
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="spectre",
-        description="SPECTRE - self-contained cybersecurity analysis framework",
+        description="Spectre analyzes cybersecurity targets and shows what to investigate next.",
         epilog=ETHICS_NOTICE,
     )
     parser.add_argument("--version", action="version", version=f"SPECTRE {__version__}")
@@ -87,19 +88,20 @@ def build_parser() -> argparse.ArgumentParser:
     _add_common_options(analyze)
 
     for command in ["technical", "personal", "organization", "org", "geospatial", "media", "historical"]:
-        sub = subparsers.add_parser(command, help=f"run {command} intelligence plugins")
+        sub = subparsers.add_parser(command, help=f"run {command} checks")
         sub.add_argument("target", help="investigation target")
         _add_common_options(sub)
 
     for command in ["domain", "ip", "dns", "web", "email", "username", "hash", "file", "binary", "image", "document", "archive", "metadata"]:
         sub = subparsers.add_parser(command, help=f"run {command} analysis directly")
-        sub.add_argument("target", help=f"{command} artifact value")
+        sub.add_argument("target", help=f"{command} target")
         _add_common_options(sub)
 
-    crypto = subparsers.add_parser("crypto", help="run smart crypto/encoding analysis")
+    crypto = subparsers.add_parser("crypto", help="run crypto/encoding analysis")
     crypto.add_argument("input", help="ciphertext/encoded string or path to a text file")
     crypto.add_argument("--format", choices=sorted(REPORTERS), default="terminal", help="report output format")
     crypto.add_argument("--output", "-o", help="write rendered report to a file instead of stdout")
+    crypto.add_argument("--verbose", action="store_true", help="show plugin names and raw evidence details")
     crypto.add_argument("--max-depth", type=int, default=4, help="maximum decoding graph depth")
     crypto.add_argument("--beam-width", type=int, default=8, help="candidate beam width")
     crypto.add_argument("--enable-xor", action="store_true", help="force single-byte XOR attempts even for printable input")
@@ -131,7 +133,8 @@ def _print_plugins() -> None:
             print(f"    - {name}")
 
 
-def _render_or_write(report, output_format: str, output: str | None, save: bool = False, db_path: str = "investigations/spectre.db") -> int:
+def _render_or_write(report, output_format: str, output: str | None, save: bool = False, db_path: str = "investigations/spectre.db", verbose: bool = False) -> int:
+    report.metadata.setdefault("display", {})["verbose"] = verbose
     if save:
         investigation_id = InvestigationStore(db_path).save(report)
         report.metadata["storage"] = {"db_path": db_path, "investigation_id": investigation_id}
@@ -204,8 +207,9 @@ def main(argv: list[str] | None = None) -> int:
             "confidence": plan.confidence,
             "reason": plan.reason,
             "notes": plan.notes,
+            "alternatives": plan.alternatives,
         }
-        return _render_or_write(report, args.format, args.output, args.save, args.db)
+        return _render_or_write(report, args.format, args.output, args.save, args.db, args.verbose)
 
     if args.command == "crypto":
         value = _read_input_or_file(args.input)
@@ -219,7 +223,7 @@ def main(argv: list[str] | None = None) -> int:
                 "enable_rot13": not args.disable_rot13,
             },
         )
-        return _render_or_write(report, args.format, args.output, args.save, args.db)
+        return _render_or_write(report, args.format, args.output, args.save, args.db, args.verbose)
 
     artifact_shortcuts = {
         "domain": (Category.TECHNICAL, None),
@@ -252,7 +256,7 @@ def main(argv: list[str] | None = None) -> int:
     if category == Category.CRYPTO and not (args.plugins or shortcut_plugins):
         value = _read_input_or_file(target)
         report = SmartCryptoEngine().run(value)
-        return _render_or_write(report, args.format, args.output, getattr(args, "save", False), getattr(args, "db", "investigations/spectre.db"))
+        return _render_or_write(report, args.format, args.output, getattr(args, "save", False), getattr(args, "db", "investigations/spectre.db"), getattr(args, "verbose", False))
 
     orchestrator = InvestigationOrchestrator()
     report = orchestrator.run(
@@ -262,7 +266,7 @@ def main(argv: list[str] | None = None) -> int:
         options={"timeout": args.timeout, "cache": args.cache, "cache_ttl": args.cache_ttl, "cache_path": args.cache_db},
         max_workers=args.max_workers,
     )
-    return _render_or_write(report, args.format, args.output, args.save, args.db)
+    return _render_or_write(report, args.format, args.output, args.save, args.db, args.verbose)
 
 
 if __name__ == "__main__":  # pragma: no cover

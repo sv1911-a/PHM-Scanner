@@ -1,79 +1,52 @@
-# SPECTRE Architecture
+# Spectre Architecture
 
 This document is for developers.
 
-Users should not need to understand this.
-
-The user-facing goal is:
+Users should not need to know how Spectre is built. They should be able to run:
 
 ```bash
 spectre analyze <target>
 ```
 
-SPECTRE should detect the target, run the right analysis, explain what matters, and suggest what to do next.
+and get useful results.
 
 ## Simple flow
 
 ```text
-User runs command
+User gives Spectre a target
  ↓
-SPECTRE detects target type
+Spectre detects what it is
  ↓
-SPECTRE chooses checks
+Spectre chooses useful checks
  ↓
-SPECTRE runs plugins
+Spectre runs them
  ↓
-SPECTRE creates a report
+Spectre summarizes the results
+ ↓
+Spectre suggests what to investigate next
 ```
 
-## Internal flow
-
-Internally, the flow is:
-
-```text
-Input
- ↓
-Auto-detection
- ↓
-Plan
- ↓
-Plugins
- ↓
-Analysis
- ↓
-Findings
- ↓
-Results
- ↓
-Relationships
- ↓
-Suggested next steps
- ↓
-Report
-```
-
-## Main parts
+## Main folders
 
 ```text
 spectre/
-  cli.py                  user commands
-  core/                   framework code
-  analysis/               local analysis code
-  sources/                public data source code
-  plugins/                analysis plugins
+  cli.py          command-line interface
+  core/           shared code
+  analysis/       local analysis code
+  sources/        public lookups
+  plugins/        checks Spectre can run
+  tests/          tests
 ```
 
 ## CLI
 
-The CLI is what users interact with.
-
-The main command is:
+The main user command is:
 
 ```bash
 spectre analyze <target>
 ```
 
-Specific commands also exist:
+Direct commands also exist:
 
 ```bash
 spectre file sample.pdf
@@ -82,55 +55,53 @@ spectre hash <hash>
 spectre crypto <text>
 ```
 
-But most users should start with `analyze`.
+They are useful when you want a specific check, but they should not be required for normal use.
 
-## Auto-detection
+## Detection
 
-Auto-detection lives in:
+Detection lives in:
 
 ```text
 spectre/core/autodetect.py
 ```
 
-It tries to identify the target type.
+It scores possible interpretations of a target.
 
-Examples:
+Example:
 
-| Input | Detected as |
-| --- | --- |
-| `sample.pdf` | file |
-| `example.com` | domain |
-| `8.8.8.8` | IP address |
-| `person@example.com` | email |
-| `https://github.com/python/cpython` | GitHub repository |
-| `5d41402abc4b2a76b9719d911017c592` | hash |
-| `SGVsbG8=` | encoded text |
-
-After detection, SPECTRE chooses a sensible analysis plan.
-
-## Core
-
-The `core/` folder contains the framework.
-
-```text
-core/
-  models.py        shared data structures
-  plugin.py        plugin interface
-  registry.py      plugin discovery
-  orchestrator.py  runs investigations
-  autodetect.py    chooses analysis automatically
-  artifacts.py     extracts useful results
-  correlation.py   finds relationships
-  recommendations.py suggests next steps
-  reporting.py     creates reports
-  storage.py       saves investigations
+```bash
+spectre analyze uryyb
 ```
 
-## Plugins
+Spectre can report:
 
-Plugins do the actual work.
+```text
+Detected: username (74%)
+Other possibilities:
+  - rot13_text (68%)
+  - plain_text (20%)
+```
 
-Every plugin follows the same pattern:
+This makes the choice visible instead of pretending there was only one answer.
+
+## Checks
+
+Checks live in:
+
+```text
+spectre/plugins/
+```
+
+A check can do things like:
+
+- analyze a file
+- identify a hash
+- look up DNS records
+- inspect TLS certificates
+- check a GitHub repository
+- decode text
+
+Each check follows the same basic pattern:
 
 ```python
 detect()
@@ -139,11 +110,9 @@ analyze()
 report()
 ```
 
-This keeps everything consistent.
+That consistency is for developers. Users should not need to care.
 
-A file plugin, DNS plugin, hash plugin, and GitHub plugin all fit the same system.
-
-## Analysis code
+## Local analysis
 
 Local analysis code lives in:
 
@@ -151,7 +120,7 @@ Local analysis code lives in:
 spectre/analysis/
 ```
 
-This is where SPECTRE's own implementations should live.
+This is where Spectre does its own work instead of calling another tool.
 
 Current example:
 
@@ -159,25 +128,24 @@ Current example:
 spectre/analysis/file/native.py
 ```
 
-It does:
+It checks:
 
-- magic byte detection
-- hashing
+- file type
+- hashes
 - entropy
-- string extraction
+- strings
+- extension mismatch
 
-No external tools are called.
+## Public lookups
 
-## Public sources
-
-Some data must come from public sources.
+Some information has to come from public sources.
 
 Examples:
 
-- DNS
-- RDAP
-- WHOIS
-- SSL/TLS certificates
+- DNS records
+- RDAP records
+- WHOIS records
+- TLS certificates
 - Certificate Transparency logs
 - GitHub repositories
 - Wayback Machine snapshots
@@ -188,32 +156,25 @@ That code lives in:
 spectre/sources/
 ```
 
-These are not meant to turn SPECTRE into an API aggregator.
+These are lookups, not outsourced analysis.
 
-They are used only when the public source is the real source of the data.
+## Findings
 
-## Results
-
-SPECTRE extracts useful results from findings.
+A finding is something Spectre learned.
 
 Examples:
 
-- domains
-- IP addresses
-- URLs
-- emails
-- hashes
-- GitHub repositories
-- JWTs
-- JavaScript endpoints
+- this file is a PE executable
+- this string contains a URL
+- this domain has a valid TLS certificate
+- this hash looks like MD5 or NTLM
+- this website hides its server header
 
-Internally these are called artifacts.
-
-In user-facing docs, it is fine to call them results.
+Findings are what users care about.
 
 ## Relationships
 
-SPECTRE also tries to connect results.
+Spectre also connects related things.
 
 Example:
 
@@ -221,15 +182,13 @@ Example:
 example.com
  ├── IP address
  ├── certificate
- ├── GitHub repository lead
+ ├── GitHub lead
  └── archived URL
 ```
 
-This helps the report feel more like an investigation instead of a list of separate outputs.
+This helps the report feel like an investigation instead of separate tool output.
 
-## Suggested next steps
-
-SPECTRE should help users decide what to do next.
+## Next steps
 
 Next-step suggestions live in:
 
@@ -237,20 +196,37 @@ Next-step suggestions live in:
 spectre/core/recommendations.py
 ```
 
-These suggestions are rule-based and transparent.
+They are simple rules.
 
 No AI is used.
 
 Examples:
 
 - if a file contains URLs, suggest analyzing those URLs
-- if a domain is analyzed, suggest certificates, web checks, or GitHub references
-- if a hash is identified, remind the user that context matters
-- if a binary is detected, suggest binary triage
+- if a website was checked, suggest robots.txt and JavaScript review
+- if a hash was identified, remind the user that context matters
+- if a binary was detected, suggest binary triage
+
+## Reports
+
+Reports should be readable first and detailed second.
+
+Default terminal reports show:
+
+- detected target type
+- summary
+- interesting findings
+- next steps
+
+Raw details are shown with:
+
+```bash
+spectre analyze <target> --verbose
+```
 
 ## Storage
 
-SPECTRE can save reports.
+Spectre can save investigations:
 
 ```bash
 spectre analyze example.com --save
@@ -258,26 +234,16 @@ spectre storage list
 spectre storage show 1
 ```
 
-Saved reports use SQLite.
+Saved data uses SQLite.
 
-## Design rule
+## Developer rule
 
-The architecture should stay hidden from the user.
+The code can be organized internally however we need.
 
-The user should not need to know about:
-
-- plugins
-- modules
-- adapters
-- artifacts
-- orchestration
-
-They should be able to run:
+But the user experience should stay simple:
 
 ```bash
 spectre analyze something
 ```
 
-and get useful results.
-
-That is the main design goal.
+If a change makes users think harder, it should be reconsidered.

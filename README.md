@@ -1,108 +1,89 @@
-# SPECTRE
+# Spectre
 
-SPECTRE helps with making workflows faster.
+Spectre is a command-line tool that analyzes cybersecurity targets and performs the first steps of an investigation automatically.
 
-> Status: early-stage project / pre-1.0. APIs and commands may change.
-
-Its job is not to replace analysts or solve every problem automatically.
-
-Its job is to remove repetitive work, reduce tool overload, and help you reach the important parts of an investigation faster.
-
-The main goal is simple:
-
-```text
-Install it, point it at something, and get a useful report with clear next steps.
-```
-
-Most users should only need one command:
+Give it a file, website, IP address, domain, binary, image, hash, GitHub repository, or encoded text. Spectre checks what it is, pulls out the useful details, summarizes what matters, and suggests what to investigate next.
 
 ```bash
 spectre analyze <target>
 ```
 
-Examples:
+## Why use it?
+
+Spectre saves you from opening five different tools just to understand one target.
+
+It is useful for:
+
+- CTFs
+- penetration testing
+- digital forensics
+- malware triage
+- OSINT
+- security research
+
+Spectre does not try to replace the analyst. It handles the repetitive first pass so you can get to the interesting part faster.
+
+## Quick examples
 
 ```bash
-spectre analyze image.jpg
+spectre analyze challenge.zip
 spectre analyze suspicious.exe
+spectre analyze image.jpg
 spectre analyze example.com
+spectre analyze https://example.com
 spectre analyze 8.8.8.8
 spectre analyze person@example.com
 spectre analyze 5d41402abc4b2a76b9719d911017c592
 spectre analyze SGVsbG8=
 ```
 
-SPECTRE tries to figure out what the target is, run the right checks, explain what it found, and suggest what to look at next.
-
-## What SPECTRE does
-
-SPECTRE answers three basic questions:
+Example output style:
 
 ```text
-What is this?
-What stands out?
-What should I investigate next?
+Spectre Report :: suspicious.exe
+================================
+Detected: file (99%)
+
+Summary
+-------
+File: suspicious.exe
+Type: DOS/PE executable
+SHA256: ...
+Strings: 42
+
+Interesting findings:
+  - Executable/binary file detected
+  - URL found in strings
+
+Findings
+--------
+- Native file triage
+  File type, hashes, entropy, and strings were collected.
+
+What to investigate next
+------------------------
+1. Review extracted strings
+2. Analyze discovered URLs or domains
+3. Perform binary triage next
 ```
 
-SPECTRE can analyze:
+## Install
 
-- files
-- binaries
-- images
-- documents
-- archives
-- domains
-- IP addresses
-- URLs
-- emails
-- usernames
-- hashes
-- GitHub repositories
-- encoded or encrypted text
-
-## What SPECTRE is not
-
-SPECTRE is not:
-
-- an AI assistant
-- an API aggregator
-- a wrapper around existing tools
-- only an OSINT tool
-
-SPECTRE should do as much analysis as possible itself.
-
-For example:
-
-- it should detect file types itself
-- it should extract strings itself
-- it should identify hashes itself
-- it should parse formats itself where possible
-- it should only use the internet when the internet is the real source of the data
-
-## Quick start
-
-Run from the project folder:
-
-```bash
-python -m spectre.cli analyze example.com
-python -m spectre.cli analyze sample.pdf
-python -m spectre.cli analyze 8.8.8.8
-```
-
-Or install locally:
-
-```bash
-python -m pip install -e .
-spectre analyze example.com
-```
-
-Optional DNS support:
+From the project folder:
 
 ```bash
 python -m pip install -e ".[dns]"
 ```
 
-## The main command
+Then run:
+
+```bash
+spectre --help
+spectre analyze --help
+spectre analyze example.com
+```
+
+## Main command
 
 Use this first:
 
@@ -110,7 +91,7 @@ Use this first:
 spectre analyze <target>
 ```
 
-SPECTRE will try to detect the target type.
+Spectre tries to detect what you gave it and chooses useful checks.
 
 Examples:
 
@@ -118,35 +99,29 @@ Examples:
 spectre analyze example.com
 ```
 
-Runs domain and network checks.
+Checks domain and network information.
+
+```bash
+spectre analyze https://portswigger.net
+```
+
+Checks DNS, RDAP, TLS, headers, and website technology clues.
 
 ```bash
 spectre analyze suspicious.exe
 ```
 
-Runs file analysis.
-
-```bash
-spectre analyze https://github.com/python/cpython
-```
-
-Runs GitHub repository analysis.
-
-```bash
-spectre analyze 5d41402abc4b2a76b9719d911017c592
-```
-
-Runs hash identification.
+Checks file type, hashes, entropy, and strings.
 
 ```bash
 spectre analyze SGVsbG8=
 ```
 
-Runs crypto/encoding analysis.
+Attempts decoding and shows the best result.
 
-## More specific commands
+## Direct commands
 
-If you already know what you want, you can still use direct commands.
+Most users should start with `spectre analyze`, but direct commands are available when you already know what you want.
 
 ### Files
 
@@ -159,7 +134,7 @@ spectre archive sample.zip
 spectre metadata report.pdf
 ```
 
-### Domains and IPs
+### Domains, IPs, and websites
 
 ```bash
 spectre domain example.com
@@ -168,7 +143,7 @@ spectre ip 8.8.8.8
 spectre web https://example.com
 ```
 
-### Identity
+### Identity clues
 
 ```bash
 spectre email person@example.com
@@ -182,54 +157,24 @@ spectre hash 5d41402abc4b2a76b9719d911017c592
 spectre crypto SGVsbG8=
 ```
 
-### Storage
-
-```bash
-spectre analyze example.com --save
-spectre storage list
-spectre storage show 1
-```
-
-## Current features
-
-SPECTRE currently has:
-
-- automatic target detection through `spectre analyze`
-- plugin system
-- reports in terminal, JSON, CSV, Markdown, and HTML
-- SQLite investigation storage
-- file analysis
-- hash identification
-- crypto decoding
-- DNS lookup
-- WHOIS lookup
-- RDAP lookup
-- IP lookup
-- reverse DNS lookup
-- ASN lookup
-- SSL/TLS certificate lookup
-- Certificate Transparency lookup
-- GitHub user, organization, repository, and search analysis
-- Wayback Machine lookup
-- result extraction
-- relationship building
-- suggested next steps
-
-## Current file analysis
-
-File analysis currently checks:
-
-- file type using magic bytes
-- file hashes
-- entropy
-- readable strings
-- whether the file extension matches the detected type
-
-It does this without calling external tools like `file` or `strings`.
-
 ## Reports
 
-Choose a report format:
+Default terminal reports are designed to be readable.
+
+They show:
+
+- detected target type
+- summary
+- interesting findings
+- next steps
+
+Use `--verbose` when you want raw details:
+
+```bash
+spectre analyze example.com --verbose
+```
+
+Other formats:
 
 ```bash
 spectre analyze example.com --format json
@@ -244,79 +189,87 @@ Supported formats:
 - Markdown
 - HTML
 
-## Results
+## Save investigations
 
-SPECTRE tries to pull out useful results automatically.
+```bash
+spectre analyze example.com --save
+spectre storage list
+spectre storage show 1
+```
 
-Examples:
+Saved investigations use SQLite.
 
-- domains
-- IP addresses
-- URLs
-- emails
-- hashes
-- GitHub repositories
-- coordinates
-- JWTs
-- JavaScript endpoints
+## What works today
 
-These results can later be used by other parts of SPECTRE.
+Spectre currently supports:
 
-## Project layout
+- target auto-detection
+- readable reports
+- next-step suggestions
+- file type checks
+- file hashes
+- entropy
+- string extraction
+- hash identification
+- Base64, hex, URL, ROT13, and XOR-style decoding
+- DNS lookup
+- WHOIS lookup
+- RDAP lookup
+- IP lookup
+- reverse DNS lookup
+- ASN lookup
+- TLS certificate lookup
+- Certificate Transparency lookup
+- GitHub user, organization, repository, and search checks
+- Wayback Machine lookup
+
+## What Spectre is not
+
+Spectre is not:
+
+- an AI assistant
+- an auto-solver
+- a wrapper around a pile of other tools
+- a replacement for Ghidra, Burp, Wireshark, or Nmap
+
+Spectre is meant to be the first tool you run, not the only tool you ever need.
+
+## Project structure
+
+Most users do not need this section.
 
 ```text
 spectre/
-  cli.py                  command-line interface
-  crypto_engine.py         crypto decoder
-
-  core/                    framework code
-  analysis/                local analysis code
-  sources/                 public data source adapters
-  plugins/                 analysis plugins
+  cli.py          command-line interface
+  core/           report, storage, detection, and shared code
+  analysis/       local analysis code
+  sources/        public lookups such as DNS, RDAP, GitHub, and CT logs
+  plugins/        individual checks
+  tests/          unit tests
 ```
 
-Most users do not need to care about this structure.
+## Development
 
-The structure exists so SPECTRE stays maintainable as it grows.
-
-## Contributing
-
-Contributions are welcome.
-
-Useful links:
-
-- `CONTRIBUTING.md` explains how to set up the project and open a pull request.
-- `SECURITY.md` explains how to report security issues.
-- `CHANGELOG.md` tracks project changes.
-- `docs/` contains the project vision, roadmap, module plan, and source policy.
-
-Before opening a pull request, run:
+Run tests:
 
 ```bash
 python -m unittest discover -s tests -v
 ```
 
-## Development direction
+Useful docs:
 
-The next priorities are:
+- `docs/VISION.md` — what Spectre is trying to become
+- `docs/NEXT_STEPS.md` — what to build next
+- `docs/MODULES.md` — planned analysis areas
+- `docs/SOURCES.md` — when internet lookups are acceptable
+- `CONTRIBUTING.md` — contribution guide
 
-1. Make `spectre analyze <target>` smarter
-2. Improve file analysis
-3. Add metadata parsing
-4. Add archive analysis
-5. Add binary analysis
-6. Add web analysis
-7. Improve reports
-8. Improve saved investigations
+## Guiding rule
 
-The architecture is for developers.
+Every feature should answer:
 
-The CLI is for users.
-
-SPECTRE should feel simple:
-
-```bash
-spectre analyze something
+```text
+Did this save the user time or reduce manual work?
 ```
 
-And it should just work.
+If not, it probably does not belong yet.

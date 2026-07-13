@@ -1,99 +1,82 @@
-# SPECTRE Source Policy
+# Spectre Lookups
 
-SPECTRE should not become an API aggregator.
+Spectre should not become a dashboard for other OSINT tools.
 
-This means SPECTRE should not depend on third-party OSINT platforms to do its analysis.
+Most analysis should happen inside Spectre.
 
-Instead, SPECTRE should:
+But some data must come from public sources because they are the real source of truth.
 
-- analyze locally when possible
-- implement its own logic when possible
-- query public sources only when they are the real source of the data
+## Good public lookups
 
-## Good public sources
+These are acceptable:
 
-Some data must come from public internet sources.
-
-These are acceptable because they are primary or authoritative sources.
-
-Examples:
-
-| Source | Why it is acceptable |
+| Lookup | Why |
 | --- | --- |
-| DNS | DNS is the real source for domain records. |
+| DNS | DNS is where domain records come from. |
 | WHOIS | WHOIS is a registration protocol. |
-| RDAP | RDAP is structured registration and network data. |
-| SSL/TLS | Certificates can be collected directly from the target. |
+| RDAP | RDAP provides structured ownership and network data. |
+| TLS certificates | Certificates can be collected directly from a website. |
 | Certificate Transparency | CT logs are public certificate records. |
 | GitHub | GitHub is the source for GitHub repositories. |
-| Wayback Machine | Internet Archive is the source for archived web pages. |
-| Reverse DNS | PTR records come from DNS infrastructure. |
+| Wayback Machine | Internet Archive stores archived web pages. |
+| Reverse DNS | PTR records come from DNS. |
 
-## Current public-source adapters
+## Current lookups
 
-SPECTRE currently has:
+Spectre currently has code for:
 
 ```text
-DNSAdapter
-WhoisAdapter
-RDAPAdapter
-SSLAdapter
-CRTSHAdapter
-WaybackAdapter
-ReverseDNSAdapter
-GitHubAdapter
+DNS
+WHOIS
+RDAP
+TLS certificates
+Certificate Transparency
+Wayback Machine
+Reverse DNS
+GitHub
 ```
 
-These are used for real public data, not for outsourcing analysis.
+These are used to collect real public data, not to outsource the analysis.
 
-## Local-first features
+## Local checks come first
 
-These should be prioritized because they do not need the internet.
+These work without the internet:
 
-| Feature | Status |
-| --- | --- |
-| Crypto decoding | Started |
-| Hash identification | Started |
-| File triage | Started |
-| Artifact extraction | Started |
-| Magic byte detection | Started |
-| String extraction | Started |
-| Entropy calculation | Started |
+- file analysis
+- crypto decoding
+- hash identification
+- string extraction
+- file type detection
+- entropy calculation
 
-Future local-first features:
+Future local checks should include:
 
-- EXIF parser
-- PDF metadata parser
-- OOXML metadata parser
-- ZIP parser
-- ELF parser
-- PE parser
-- Mach-O parser
+- EXIF parsing
+- PDF metadata parsing
+- Office document metadata parsing
+- ZIP parsing
+- PE parsing
+- ELF parsing
+- Mach-O parsing
 - JavaScript endpoint extraction
 
-## Optional enhanced sources
+## Optional external services
 
-These may be added later, but they should not become core dependencies.
+These may be useful later, but they should not become required:
 
-Examples:
+- Shodan
+- Censys
+- SecurityTrails
+- HackerTarget
 
-| Source | Purpose |
-| --- | --- |
-| Shodan | exposed services and banners |
-| Censys | certificates and hosts |
-| SecurityTrails | historical DNS and subdomains |
-| HackerTarget | convenience DNS and host data |
-
-These are useful, but they are not the main identity of SPECTRE.
+They should be optional extras only.
 
 ## Cache
 
-SPECTRE can cache public-source results.
-
-Example:
+Spectre can cache lookup results:
 
 ```bash
-spectre domain example.com --cache --cache-ttl 3600
+spectre analyze example.com --cache --cache-ttl 3600
 ```
 
 Default cache path:
@@ -102,11 +85,9 @@ Default cache path:
 investigations/source_cache.db
 ```
 
-This helps avoid repeating the same public lookups.
-
-The source cache is separate from saved investigations.
+The cache is separate from saved investigations.
 
 ```text
-source cache = reused lookup results
-investigation storage = saved reports
+cache = reused lookup results
+saved investigation = report history
 ```

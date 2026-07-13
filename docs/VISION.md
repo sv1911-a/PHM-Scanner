@@ -1,187 +1,162 @@
-# SPECTRE Vision
+# Spectre Vision
 
-## The simple goal
+Spectre is a command-line tool that analyzes cybersecurity targets and performs the first steps of an investigation automatically.
 
-SPECTRE is a cybersecurity workflow accelerator.
-
-It should help users move faster through the boring and repetitive parts of an investigation.
-
-It should not replace analysts.
-
-It should not solve every challenge automatically.
-
-It should help users reach the important parts faster.
-
-The main command should be:
+The main command is:
 
 ```bash
 spectre analyze <target>
 ```
 
-The user gives SPECTRE something.
+The user gives Spectre something. Spectre figures out what it is, runs useful checks, summarizes what matters, and suggests what to investigate next.
 
-SPECTRE figures out what it is, runs the right checks, and produces a useful report.
+## What problem does Spectre solve?
 
-## What SPECTRE should answer
-
-Every analysis should try to answer:
+Security work often starts with the same boring questions:
 
 ```text
 What is this?
 What stands out?
-What should I investigate next?
+What should I check next?
 ```
 
-SPECTRE should not only dump raw output.
+A file needs hashes and strings.
 
-It should explain what it found and why it matters.
+A domain needs DNS, certificates, and web checks.
 
-## User experience
+A hash needs identification.
 
-The user should not need to choose modules.
+Encoded text needs decoding attempts.
 
-They should be able to run:
+A website needs headers, technologies, robots.txt, sitemap, and endpoints.
+
+Spectre should handle that first pass so the user can focus on the real problem.
+
+## What Spectre should feel like
 
 ```bash
-spectre analyze image.jpg
 spectre analyze suspicious.exe
-spectre analyze example.com
-spectre analyze https://example.com
-spectre analyze 8.8.8.8
-spectre analyze person@example.com
-spectre analyze 5d41402abc4b2a76b9719d911017c592
 ```
 
-SPECTRE should detect the target type and run useful first-pass checks.
+Spectre should answer:
 
-## What SPECTRE is
+- What kind of file is it?
+- What are its hashes?
+- Are there useful strings?
+- Are there URLs or domains inside?
+- What should I inspect next?
 
-SPECTRE is for:
+```bash
+spectre analyze example.com
+```
 
-- reverse engineering triage
-- web security reconnaissance
-- cryptography and encoding analysis
-- OSINT investigation
-- file analysis
-- metadata analysis
-- digital forensics
-- malware triage
-- CTF support
+Spectre should answer:
 
-The same features should help both CTF players and real-world security analysts.
+- What DNS records exist?
+- Who owns it?
+- What certificates are visible?
+- Is there a public website?
+- What should I check next?
 
-Do not build separate "CTF features."
+## What Spectre is not
 
-Build strong cybersecurity features that naturally help with CTFs.
-
-## What SPECTRE is not
-
-SPECTRE is not:
+Spectre is not:
 
 - an AI assistant
 - an auto-solver
-- an API aggregator
-- a folder of random scripts
+- a replacement for analysts
 - a wrapper around existing tools
-- a replacement for expert analysts
+- a dashboard for third-party OSINT platforms
 
-SPECTRE should accelerate the workflow, not remove the need to think.
+Spectre should help users work faster, not pretend to think for them.
 
-## Core philosophy
+## Design rules
 
-SPECTRE should:
+Spectre should:
 
-- detect what the user provided
-- run the relevant analysis automatically
-- group findings into one report
-- highlight important results
-- suggest logical next steps
-- stay deterministic and transparent
-- avoid AI-generated reasoning
+- choose useful checks automatically
+- keep the main command simple
+- show summaries before details
+- explain why findings matter
+- suggest next steps
+- avoid noisy output by default
+- show raw details only when the user asks for them
 
-The user should spend less time remembering tools and more time solving the actual problem.
+## Reverse engineering
 
-## Reverse engineering direction
+Spectre should not replace Ghidra, Binary Ninja, or IDA.
 
-SPECTRE should not replace Ghidra, Binary Ninja, IDA, or other deep reverse-engineering tools.
+It should do quick triage:
 
-Instead, SPECTRE should do the first-pass triage:
+- file type
+- hashes
+- strings
+- entropy
+- interesting URLs or domains
+- possible protections
+- suspicious clues
 
-- identify file type
-- calculate hashes
-- extract strings
-- calculate entropy
-- detect common protections
-- find interesting URLs or domains
-- highlight suspicious behavior clues
-- point the analyst toward code or data worth investigating
+The goal is to help the analyst know where to look next.
 
-The goal is to reduce time spent manually exploring binaries.
+## Web security
 
-## Web security direction
+Spectre should combine common web checks:
 
-SPECTRE should combine common web reconnaissance tasks into one workflow.
-
-It should check things like:
-
-- technologies
-- HTTP headers
+- DNS
+- TLS certificates
+- headers
 - cookies
+- technologies
 - robots.txt
 - sitemap.xml
-- endpoints
-- JavaScript files
-- authentication clues
-- interesting parameters
-- common misconfigurations
+- JavaScript endpoints
+- common configuration clues
 
-The user should not need to manually combine many tools for basic reconnaissance.
+The user should not need to manually chain many small utilities for basic reconnaissance.
 
-## Crypto direction
+## Crypto
 
-SPECTRE should remove repetitive decoding work.
+Spectre should remove repetitive decoding work.
 
 It should help with:
 
-- encoding detection
-- multi-layer decoding
+- Base64
+- hex
+- URL encoding
+- ROT/Caesar-style text
+- XOR guesses
 - hash identification
-- XOR detection
-- Caesar/ROT analysis
-- frequency analysis
-- basic cipher identification
-- common simple crypto mistakes
+- multi-layer decoding
 
-Advanced cryptanalysis should still be left to the analyst.
+Advanced cryptanalysis still belongs to the analyst.
 
-## OSINT direction
+## OSINT
 
-SPECTRE should make investigations easier by showing useful pivots.
+Spectre should show useful pivots, not collect everything possible.
 
-It should focus on quality and structure, not collecting data from every possible source.
+Good output should say:
 
-Good OSINT output should answer:
+- what was found
+- why it might matter
+- what to investigate next
 
-- what was found?
-- why does it matter?
-- what can I pivot to next?
+## CTFs and real investigations
 
-## Design rule
+Do not build separate CTF-only features.
 
-Every feature should satisfy at least one of these:
+Build useful security checks.
 
-- saves time
-- reduces manual effort
-- reduces cognitive overload
-- highlights important findings
-- improves the investigation workflow
-- produces a clear and useful report
+Good file, crypto, web, and binary analysis helps:
 
-Avoid features that exist only because they are technically interesting.
+- CTF players
+- penetration testers
+- incident responders
+- forensic analysts
+- security researchers
 
 ## Success criteria
 
-A user should finish using SPECTRE thinking:
+A user should finish using Spectre thinking:
 
 ```text
 That saved me time.

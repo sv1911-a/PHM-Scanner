@@ -6,6 +6,15 @@ All notable changes to SPECTRE will be documented here.
 
 Initial framework release.
 
+### Changed after Kali validation
+
+- Reworded project identity to simply "SPECTRE" instead of a marketing tagline.
+- Improved terminal report readability with summaries first and raw evidence hidden by default.
+- Added `--verbose` for plugin names and raw evidence details.
+- Added multi-candidate target detection with alternative interpretations.
+- Hardened technology fingerprinting so unusual `Server` header values are not treated as technologies.
+- Improved rule-based next-step recommendations.
+
 ### Added
 
 - `spectre analyze <target>` workflow
@@ -13,8 +22,8 @@ Initial framework release.
 - plugin system
 - reporting system: terminal, JSON, CSV, Markdown, HTML
 - SQLite investigation storage
-- deterministic next-step recommendations
-- artifact extraction
+- rule-based next-step recommendations
+- finding extraction
 - relationship graph metadata
 - native file triage:
   - magic bytes

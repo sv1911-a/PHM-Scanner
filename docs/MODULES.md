@@ -1,74 +1,43 @@
-# SPECTRE Modules
+# Spectre Checks
 
 This document is for developers.
 
-Users should not need to think about modules.
-
-Users should mainly run:
+Users should not need to think about checks or modules. They should normally run:
 
 ```bash
 spectre analyze <target>
 ```
 
-Modules exist internally so the code stays organized.
+Internally, Spectre is split into checks so the code stays maintainable.
 
-## Simple rule
+## What is a check?
 
-A module is a capability area.
+A check is one thing Spectre can do.
 
 Examples:
 
-- File
-- Binary
-- Web
-- Image
-- Archive
-- Crypto
-- Metadata
-- DNS
-- Network
-- Identity
+- identify a file type
+- extract strings
+- identify a hash
+- look up DNS records
+- collect TLS certificate data
+- inspect a GitHub repository
+- decode Base64 text
 
-Modules should not just be wrappers around external services.
+## Current areas
 
-## User view vs developer view
-
-User view:
-
-```bash
-spectre analyze suspicious.exe
-```
-
-Developer view:
-
-```text
-Auto-detect file
- ↓
-Run file analysis
- ↓
-Maybe run binary analysis later
- ↓
-Extract strings, hashes, URLs, domains
- ↓
-Create report
-```
-
-The user only sees the useful result.
-
-## Current modules
-
-| Module | Status | What it does |
+| Area | Status | Examples |
 | --- | --- | --- |
 | File | Started | file type, hashes, entropy, strings |
 | Crypto | Started | decoding and hash identification |
-| Domain/IP | Started | DNS, WHOIS, RDAP, SSL, ASN, CRT.SH |
+| Domain/IP | Started | DNS, WHOIS, RDAP, SSL, ASN, CT logs |
 | Identity | Started | email and username checks |
 | GitHub | Started | users, orgs, repos, commits, contributors |
-| Historical | Started | Wayback snapshots |
+| History | Started | Wayback snapshots |
 
-## File module
+## File checks
 
-Current features:
+Current:
 
 - detect file type
 - calculate hashes
@@ -76,16 +45,16 @@ Current features:
 - extract strings
 - check extension mismatch
 
-Next features:
+Next:
 
 - more file signatures
 - embedded file detection
 - better string extraction
 - suspicious pattern detection
 
-## Binary module
+## Binary checks
 
-Planned features:
+Planned:
 
 - PE parser
 - ELF parser
@@ -94,32 +63,25 @@ Planned features:
 - exports
 - sections
 - symbols
-- entropy by section
+- section entropy
 - packer clues
 
-Useful for:
+## Web checks
 
-- malware triage
-- reverse engineering
-- CTFs
-- forensics
+Planned:
 
-## Web module
-
-Planned features:
-
-- HTTP headers
+- headers
 - cookies
 - robots.txt
 - sitemap.xml
-- HTML links
+- links
 - JavaScript endpoints
 - security headers
-- technology detection
+- technology clues
 
-## Image module
+## Image checks
 
-Planned features:
+Planned:
 
 - EXIF metadata
 - GPS extraction
@@ -127,9 +89,9 @@ Planned features:
 - image hashes
 - hidden metadata
 
-## Archive module
+## Archive checks
 
-Planned features:
+Planned:
 
 - ZIP support
 - TAR support
@@ -138,9 +100,9 @@ Planned features:
 - hashes for files inside archives
 - nested analysis
 
-## Metadata module
+## Metadata checks
 
-Planned features:
+Planned:
 
 - PDF metadata
 - Office document metadata
@@ -149,39 +111,22 @@ Planned features:
 - embedded links
 - embedded emails
 
-## What every module should do
+## What every check should do
 
-Every module should try to answer:
+Every check should help answer:
 
-1. What is this target?
-2. What useful information can we extract?
-3. What looks suspicious or important?
-4. What new results did we discover?
-5. What should appear in the report?
-
-## Internal plugin metadata
-
-Plugins can describe themselves internally.
-
-Example:
-
-```python
-module = "file"
-capability = "native_file_triage"
-consumes = ("file",)
-produces = ("hash", "string", "url", "email", "domain")
+```text
+What is this?
+What stands out?
+What should I investigate next?
 ```
 
-This helps developers connect modules later.
-
-Users do not need to see this.
+If a check only exists because it is technically interesting, it should wait.
 
 ## Main goal
 
-Modules should make this command smarter:
+All checks should make this command better:
 
 ```bash
 spectre analyze <target>
 ```
-
-That is the point.

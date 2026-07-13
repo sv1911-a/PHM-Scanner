@@ -14,6 +14,7 @@ from spectre.core.artifacts import artifacts_from_report
 from spectre.core.models import Category, Evidence, Finding, InvestigationReport, PluginResult, Severity, TargetContext
 from spectre.core.recommendations import build_next_steps
 from spectre.core.registry import registry
+from spectre.core.summary import build_summary
 
 
 @dataclass(slots=True)
@@ -200,5 +201,6 @@ class SmartCryptoEngine:
         )
         report = InvestigationReport(target="<crypto-input>", category=Category.CRYPTO, results=[result], metadata={"engine": "beam_search"})
         report.metadata["artifacts"] = artifacts_from_report(report)
+        report.metadata["summary"] = build_summary(report)
         report.metadata["next_steps"] = build_next_steps(report)
         return report

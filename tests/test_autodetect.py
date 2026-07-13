@@ -35,6 +35,12 @@ class AutoDetectTests(unittest.TestCase):
         self.assertEqual(plan.target_type, "github_repository")
         self.assertEqual(plan.plugins, ["github_repo_analysis"])
 
+    def test_ambiguous_username_rot13_has_alternatives(self):
+        plan = plan_analysis("uryyb")
+        self.assertEqual(plan.target_type, "username")
+        alternative_types = {item["target_type"] for item in plan.alternatives}
+        self.assertIn("rot13_text", alternative_types)
+
 
 if __name__ == "__main__":
     unittest.main()

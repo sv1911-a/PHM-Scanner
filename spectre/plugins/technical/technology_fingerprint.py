@@ -29,12 +29,27 @@ SIGNATURES: dict[str, list[re.Pattern[str]]] = {
 }
 
 HEADER_HINTS = {
-    "server": "Server",
-    "x-powered-by": "X-Powered-By",
-    "x-generator": "X-Generator",
     "cf-ray": "Cloudflare",
     "x-vercel-id": "Vercel",
     "x-nextjs-cache": "Next.js",
+}
+
+SAFE_HEADER_VALUE_RE = re.compile(r"^[A-Za-z0-9 ._+:/()-]{1,80}$")
+SAFE_POWERED_BY = {
+    "php": "PHP",
+    "express": "Express",
+    "asp.net": "ASP.NET",
+    "next.js": "Next.js",
+}
+SAFE_SERVER_NAMES = {
+    "nginx": "nginx",
+    "apache": "Apache",
+    "cloudflare": "Cloudflare",
+    "openresty": "OpenResty",
+    "microsoft-iis": "Microsoft IIS",
+    "iis": "Microsoft IIS",
+    "envoy": "Envoy",
+    "caddy": "Caddy",
 }
 
 
@@ -80,17 +95,33 @@ class TechnologyFingerprintPlugin(BasePlugin):
         html = raw.get("html_excerpt", "")
         technologies: dict[str, set[str]] = {}
 
+        server_header = headers.get("server", "")
+        safe_server = self._safe_server_technology(server_header)
+        if safe_server:
+            technologies.setdefault(safe_server, set()).add("safe_server_header")
+
+        powered_by = headers.get("x-powered-by", "")
+        safe_powered = self._safe_powered_by(powered_by)
+        if safe_powered:
+            technologies.setdefault(safe_powered, set()).add("safe_x_powered_by_header")
+
+        generator = headers.get("x-generator", "")
+        if generator and SAFE_HEADER_VALUE_RE.match(generator):
+            technologies.setdefault(generator.strip(), set()).add("safe_x_generator_header")
+
         for header, label in HEADER_HINTS.items():
             if headers.get(header):
-                technologies.setdefault(label, set()).add(f"header:{header}={headers[header]}")
+                technologies.setdefault(label, set()).add(f"header:{header}")
 
-        combined = "\n".join([html, "\n".join(f"{k}: {v}" for k, v in headers.items())])
+        combined = "\n".join([html, "\n".join(f"{k}: {v}" for k, v in headers.items() if k != "server")])
         for tech, patterns in SIGNATURES.items():
             for pattern in patterns:
                 if pattern.search(combined):
                     technologies.setdefault(tech, set()).add(f"signature:{pattern.pattern[:60]}")
 
         evidence = [Evidence(source="http.status", value=raw.get("status")), Evidence(source="http.url", value=raw.get("url"))]
+        if server_header:
+            evidence.append(Evidence(source="http.server_header", value=server_header, metadata={"interpreted_as_technology": bool(safe_server)}))
         for tech, reasons in sorted(technologies.items()):
             evidence.append(Evidence(source="technology", value={"name": tech, "reasons": sorted(reasons)}))
 
@@ -106,6 +137,26 @@ class TechnologyFingerprintPlugin(BasePlugin):
                 metadata={"technologies": sorted(technologies)},
             )
         ]
+
+    @staticmethod
+    def _safe_server_technology(value: str) -> str:
+        if not value or not SAFE_HEADER_VALUE_RE.match(value):
+            return ""
+        lowered = value.lower()
+        for token, label in SAFE_SERVER_NAMES.items():
+            if token in lowered:
+                return label
+        return ""
+
+    @staticmethod
+    def _safe_powered_by(value: str) -> str:
+        if not value or not SAFE_HEADER_VALUE_RE.match(value):
+            return ""
+        lowered = value.lower()
+        for token, label in SAFE_POWERED_BY.items():
+            if token in lowered:
+                return label
+        return ""
 
     def report(self, target: TargetContext, raw: dict[str, Any], findings: list[Finding], errors: list[str] | None = None):
         return self._result(target, raw, findings, errors)

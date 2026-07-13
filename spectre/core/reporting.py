@@ -29,55 +29,135 @@ class JSONReporter(Reporter):
         return json.dumps(to_primitive(report), indent=2, sort_keys=True, default=str)
 
 
+def _safe_evidence(evidence_items, max_items: int = 3) -> list[str]:
+    """Return concise evidence strings for non-verbose terminal output."""
+
+    output: list[str] = []
+    for evidence in evidence_items:
+        if str(evidence.source) in {"http.server_header"}:
+            continue
+        value = evidence.value
+        if value is None or value == "" or value == [] or value == {}:
+            continue
+        if isinstance(value, dict):
+            if "name" in value:
+                text = str(value["name"])
+            elif "full_name" in value:
+                text = str(value["full_name"])
+            elif "hostname" in value:
+                text = str(value["hostname"])
+            else:
+                continue
+        elif isinstance(value, list):
+            if not value:
+                continue
+            text = f"{len(value)} item(s)"
+        else:
+            text = str(value)
+        if len(text) > 140:
+            text = text[:137] + "..."
+        label = str(evidence.source).replace(".", " ").replace(":", " ")
+        output.append(f"  {label}: {text}")
+        if len(output) >= max_items:
+            break
+    return output
+
+
 class TerminalReporter(Reporter):
     format_name = "terminal"
 
     def render(self, report: InvestigationReport) -> str:
+        verbose = bool(report.metadata.get("display", {}).get("verbose")) if isinstance(report.metadata, dict) else False
         lines: list[str] = []
-        lines.append(f"SPECTRE Report :: {report.category.value.upper()} :: {report.target}")
+        lines.append(f"Spectre Report :: {report.target}")
         lines.append("=" * min(88, max(32, len(lines[-1]))))
+
         plan = report.metadata.get("analysis_plan") if isinstance(report.metadata, dict) else None
         if isinstance(plan, dict):
             detected = plan.get("target_type", "unknown")
-            reason = plan.get("reason", "")
-            lines.append(f"Detected: {detected}" + (f" ({reason})" if reason else ""))
+            confidence = plan.get("confidence")
+            conf_text = f" ({round(float(confidence) * 100)}%)" if isinstance(confidence, int | float) else ""
+            lines.append(f"Detected: {detected}{conf_text}")
+            alternatives = plan.get("alternatives") or []
+            if alternatives:
+                lines.append("Other possibilities:")
+                for alt in alternatives[:3]:
+                    try:
+                        pct = round(float(alt.get("confidence", 0)) * 100)
+                    except Exception:
+                        pct = 0
+                    lines.append(f"  - {alt.get('target_type', 'unknown')} ({pct}%)")
+
         if not report.results:
             lines.append(report.metadata.get("message", "No results."))
             return "\n".join(lines)
 
-        for result in report.results:
+        self._append_summary(lines, report)
+        self._append_findings(lines, report, verbose)
+        self._append_next_steps(lines, report)
+        return "\n".join(lines)
+
+    def _append_summary(self, lines: list[str], report: InvestigationReport) -> None:
+        summary = report.metadata.get("summary", {}) if isinstance(report.metadata, dict) else {}
+        fields = summary.get("fields", []) if isinstance(summary, dict) else []
+        interesting = summary.get("interesting", []) if isinstance(summary, dict) else []
+        if not fields and not interesting:
+            return
+        lines.append("")
+        lines.append("Summary")
+        lines.append("-------")
+        for item in fields[:12]:
+            label = item.get("label", "Item")
+            value = item.get("value", "")
+            lines.append(f"{label}: {value}")
+        if interesting:
             lines.append("")
-            status = result.status.upper()
-            lines.append(f"[{status}] {result.plugin}")
-            if result.errors:
+            lines.append("Interesting findings:")
+            for item in interesting[:8]:
+                lines.append(f"  - {item}")
+
+    def _append_findings(self, lines: list[str], report: InvestigationReport, verbose: bool) -> None:
+        lines.append("")
+        lines.append("Findings")
+        lines.append("--------")
+        shown = 0
+        for result in report.results:
+            if verbose:
+                lines.append(f"[{result.status.upper()}] {result.plugin}")
                 for error in result.errors:
                     lines.append(f"  ! {error}")
-            if not result.findings:
-                lines.append("  No findings.")
-                continue
+            elif result.errors:
+                lines.append(f"- Some checks failed in {result.plugin}. Re-run with --verbose for details.")
             for finding in result.findings:
-                conf = round(finding.confidence * 100, 1)
-                lines.append(f"  - {finding.title} ({finding.severity.value}, confidence={conf}%)")
-                lines.append(f"    {finding.description}")
-                for evidence in finding.evidence[:8]:
-                    lines.append(f"    evidence: {evidence.source} = {evidence.value}")
-                if len(finding.evidence) > 8:
-                    lines.append(f"    ... {len(finding.evidence) - 8} more evidence items")
+                shown += 1
+                conf = round(finding.confidence * 100)
+                prefix = "  -" if verbose else "-"
+                lines.append(f"{prefix} {finding.title} ({conf}%)")
+                lines.append(f"  {finding.description}")
+                if verbose:
+                    for evidence in finding.evidence:
+                        lines.append(f"    evidence: {evidence.source} = {evidence.value}")
+                else:
+                    for evidence in _safe_evidence(finding.evidence, max_items=3):
+                        lines.append(f"  {evidence}")
+        if shown == 0:
+            lines.append("No findings.")
 
+    def _append_next_steps(self, lines: list[str], report: InvestigationReport) -> None:
         next_steps = report.metadata.get("next_steps", []) if isinstance(report.metadata, dict) else []
-        if next_steps:
-            lines.append("")
-            lines.append("Suggested next steps")
-            lines.append("--------------------")
-            for index, step in enumerate(next_steps[:6], start=1):
-                title = step.get("title", "Review findings")
-                why = step.get("why", "This may help continue the investigation.")
-                priority = step.get("priority", "medium")
-                lines.append(f"{index}. {title} [{priority}]")
-                lines.append(f"   why: {why}")
-                if step.get("command"):
-                    lines.append(f"   try: {step['command']}")
-        return "\n".join(lines)
+        if not next_steps:
+            return
+        lines.append("")
+        lines.append("What to investigate next")
+        lines.append("------------------------")
+        for index, step in enumerate(next_steps[:6], start=1):
+            title = step.get("title", "Review findings")
+            why = step.get("why", "This may help continue the investigation.")
+            priority = step.get("priority", "medium")
+            lines.append(f"{index}. {title} [{priority}]")
+            lines.append(f"   {why}")
+            if step.get("command"):
+                lines.append(f"   Try: {step['command']}")
 
 
 class CSVReporter(Reporter):

@@ -10,6 +10,7 @@ from spectre.core.correlation import build_relationship_graph
 from spectre.core.models import Category, InvestigationReport, PluginResult, TargetContext
 from spectre.core.recommendations import build_next_steps
 from spectre.core.registry import registry
+from spectre.core.summary import build_summary
 
 
 class InvestigationOrchestrator:
@@ -76,5 +77,6 @@ class InvestigationOrchestrator:
         )
         report.metadata["artifacts"] = artifacts_from_report(report)
         report.metadata["relationship_graph"] = build_relationship_graph(report)
+        report.metadata["summary"] = build_summary(report)
         report.metadata["next_steps"] = build_next_steps(report)
         return report
