@@ -1,183 +1,149 @@
 # Spectre Roadmap
 
-The main goal is still:
+Spectre has one goal:
 
 ```bash
 spectre analyze <target>
 ```
 
-Spectre should detect the target, run useful first-pass checks, summarize the results, and suggest what to investigate next.
+The user shouldn't have to decide which tools to use.
+Spectre should detect the target, perform the most useful first-pass analysis, highlight what matters, and suggest what to investigate next.
 
-## How to choose what to build
+---
 
-Every new feature should answer yes to at least one question:
+## Current Focus
 
-- Does it save time?
-- Does it reduce manual work?
-- Does it make the report clearer?
-- Does it highlight something important?
-- Does it help the user know what to do next?
+Improve the default experience.
 
-If not, reconsider it.
+Every improvement should make Spectre:
 
-## Priority 1: Improve `spectre analyze`
+- Faster to use
+- Easier to understand
+- More useful during real investigations
+- Better at reducing repetitive work
 
-Current detection supports:
+If a feature doesn't improve one of those, it can wait.
 
-- files
-- domains
-- IP addresses
-- URLs
-- emails
-- usernames
-- hashes
-- GitHub repositories
-- encoded text
+---
 
-Next:
+# Near-term Goals
 
-- improve target scoring
-- show better alternative interpretations
-- choose better default checks
-- add `--fast`
-- add `--deep`
-- avoid slow checks unless useful
+## Better Detection
 
-## Priority 2: Improve reports
+- Improve target classification
+- Handle ambiguous inputs more intelligently
+- Show alternative interpretations when appropriate
+- Improve default analysis selection
 
-Current reports show:
+---
 
-- detected target type
-- summary
-- findings
-- next steps
+## Better Reports
 
-Next:
+- Cleaner terminal output
+- Better summaries
+- Less raw data
+- Highlight important findings first
+- Better HTML reports
 
-- better summaries for websites
-- better summaries for files
-- better summaries for GitHub repositories
-- cleaner HTML reports
-- timeline sections when useful
-- PDF export later
+---
 
-## Priority 3: Improve file analysis
+## Better File Analysis
 
-Current:
+- Detect embedded files
+- Improve string extraction
+- Extract URLs, domains and emails
+- Detect suspicious patterns
+- Better file summaries
 
-- magic bytes
-- hashes
-- entropy
-- strings
-- extension mismatch check
+---
 
-Next:
+## Better Metadata
 
-- more file signatures
-- embedded file detection
-- better string extraction
-- URL/email/domain extraction from strings
-- suspicious pattern detection
+- Images (EXIF, GPS)
+- PDFs
+- Office documents
+- Useful timestamps
+- Author information
 
-## Priority 4: Metadata checks
+---
 
-Planned:
+## Better Archive Analysis
 
-- EXIF parser
-- GPS extraction
-- PDF metadata parser
-- Office document metadata parser
-- timestamps
-- author fields
+- ZIP
+- TAR
+- GZIP
+- Nested archives
+- Recursive analysis
 
-## Priority 5: Archive checks
+---
 
-Planned:
+## Better Binary Analysis
 
-- ZIP listing
-- TAR listing
-- GZIP handling
-- hashes for files inside archives
-- nested file analysis
-- suspicious file detection
+- ELF
+- PE
+- Mach-O
+- Imports
+- Sections
+- Entropy
+- Compiler information
+- Interesting strings
 
-## Priority 6: Binary checks
+---
 
-Planned:
-
-- PE parser
-- ELF parser
-- Mach-O parser
-- imports
-- exports
-- sections
-- section entropy
-- compiler clues
-- packer clues
-- interesting strings
-
-## Priority 7: Web checks
-
-Planned:
+## Better Web Analysis
 
 - robots.txt
 - sitemap.xml
-- cookies
-- JavaScript endpoint extraction
-- security header checks
-- interesting parameters
-- authentication clues
+- Security headers
+- JavaScript endpoint discovery
+- Interesting parameters
+- Authentication clues
 
-## Priority 8: Domain and IP checks
+---
 
-Current:
+## Better Infrastructure Analysis
+
+Continue improving:
 
 - DNS
-- WHOIS
 - RDAP
-- reverse DNS
+- WHOIS
 - ASN
-- TLS certificates
+- TLS
 - Certificate Transparency
 
-Next:
+Focus on better summaries instead of more raw data.
 
-- better DNS summaries
-- better RDAP ownership summaries
-- better CT log cleanup
-- verify subdomain leads
-- better infrastructure summaries
+---
 
-## Priority 9: GitHub checks
+## Better GitHub Analysis
 
-Current:
+- Repository timeline
+- Dependency analysis
+- CI/CD clues
+- Infrastructure files
+- Better secret detection
 
-- users
-- organizations
-- repositories
-- search
-- contributors
-- commits
-- redacted secret indicators
+---
 
-Next:
+# Future
 
-- repository timeline
-- dependency file parsing
-- GitHub Actions checks
-- Docker/Terraform/Kubernetes clues
-- better secret rule configuration
-
-## Lower priority
-
-These can wait:
+These are useful, but not important yet.
 
 - GUI
+- PDF reports
 - Shodan
 - Censys
 - SecurityTrails
-- external tool integrations
-- AI summaries
-- LLM agents
+- External tool integrations
+- AI features
 
-First, make the default command genuinely useful.
+---
+
+# Guiding Principle
+
+Whenever adding a feature, ask:
+
+> Would this have saved me time during a real CTF or security investigation?
+
+If the answer is no, don't build it yet.
