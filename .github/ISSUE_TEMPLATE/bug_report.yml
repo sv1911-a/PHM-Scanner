@@ -1,0 +1,35 @@
+name: Bug report
+description: Report something that is broken
+title: "Bug: "
+labels: ["bug"]
+body:
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: Describe the bug clearly.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: How to reproduce
+      description: Include the command you ran and a small sample input if safe.
+      placeholder: |
+        spectre analyze ...
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Version or commit
+      placeholder: 0.1.0 / commit hash
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      placeholder: OS, Python version, install method

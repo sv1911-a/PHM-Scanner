@@ -1,0 +1,53 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+coverage.xml
+htmlcov/
+
+# Build artifacts
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# SPECTRE runtime data
+investigations/
+*.db
+*.sqlite
+*.sqlite3
+reports/
+
+# Local secrets / config
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.crt
+.netrc
+
+# Editors / OS
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Temporary files
+/tmp/
+*.tmp
+*.log

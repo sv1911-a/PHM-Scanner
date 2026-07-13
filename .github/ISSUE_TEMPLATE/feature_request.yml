@@ -1,0 +1,38 @@
+name: Feature request
+description: Suggest an improvement
+title: "Feature: "
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What repetitive work or investigation pain does this solve?
+    validations:
+      required: true
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed solution
+      description: What should SPECTRE do?
+    validations:
+      required: true
+  - type: dropdown
+    id: benefit
+    attributes:
+      label: Main benefit
+      options:
+        - Saves time
+        - Reduces manual effort
+        - Reduces cognitive overload
+        - Highlights important findings
+        - Improves reports
+        - Improves next-step guidance
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: example
+    attributes:
+      label: Example command or workflow
+      placeholder: spectre analyze <target>
