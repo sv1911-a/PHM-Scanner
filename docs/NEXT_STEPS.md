@@ -1,14 +1,14 @@
-# Spectre Roadmap
+# PHM-Scanner Roadmap
 
-The main goal is still:
+The main goal is:
 
 ```bash
-spectre analyze <target>
+phm analyze <target>
 ```
 
-Spectre should detect the target, run useful first-pass checks, summarize the results, and suggest what to investigate next.
+PHM-Scanner should detect the target, run useful first-pass checks, summarize the results, and suggest what to investigate next.
 
-## How to choose what to build
+## Rule for new work
 
 Every new feature should answer yes to at least one question:
 
@@ -18,9 +18,9 @@ Every new feature should answer yes to at least one question:
 - Does it highlight something important?
 - Does it help the user know what to do next?
 
-If not, reconsider it.
+If not, skip it for now.
 
-## Priority 1: Improve `spectre analyze`
+## Priority 1: Improve `phm analyze`
 
 Current detection supports:
 
@@ -39,29 +39,11 @@ Next:
 - improve target scoring
 - show better alternative interpretations
 - choose better default checks
+- avoid slow checks unless useful
 - add `--fast`
 - add `--deep`
-- avoid slow checks unless useful
 
-## Priority 2: Improve reports
-
-Current reports show:
-
-- detected target type
-- summary
-- findings
-- next steps
-
-Next:
-
-- better summaries for websites
-- better summaries for files
-- better summaries for GitHub repositories
-- cleaner HTML reports
-- timeline sections when useful
-- PDF export later
-
-## Priority 3: Improve file analysis
+## Priority 2: Improve file analysis
 
 Current:
 
@@ -70,65 +52,115 @@ Current:
 - entropy
 - strings
 - extension mismatch check
+- URLs, domains, emails, IPs, hashes, JWTs, tokens, and API key detection
+- embedded file signature checks
+- possible secret checks
 
 Next:
 
 - more file signatures
-- embedded file detection
+- better embedded file detection
 - better string extraction
-- URL/email/domain extraction from strings
-- suspicious pattern detection
+- better suspicious pattern checks
+- better summaries for files that deserve deeper analysis
 
-## Priority 4: Metadata checks
+## Priority 3: Improve binary triage
 
-Planned:
+Current:
 
-- EXIF parser
-- GPS extraction
-- PDF metadata parser
-- Office document metadata parser
-- timestamps
-- author fields
+- basic PE hints
+- basic ELF hints
+- section entropy for PE
+- suspicious import hints
+- packer hints
 
-## Priority 5: Archive checks
+Next:
 
-Planned:
-
-- ZIP listing
-- TAR listing
-- GZIP handling
-- hashes for files inside archives
-- nested file analysis
-- suspicious file detection
-
-## Priority 6: Binary checks
-
-Planned:
-
-- PE parser
-- ELF parser
+- better PE parser
+- better ELF parser
 - Mach-O parser
 - imports
 - exports
 - sections
-- section entropy
+- protections
 - compiler clues
-- packer clues
-- interesting strings
+- clearer answer to: should I open this in Ghidra?
 
-## Priority 7: Web checks
+## Priority 4: Improve web analysis
 
-Planned:
+Current:
 
+- headers
+- cookies
+- security headers
 - robots.txt
 - sitemap.xml
-- cookies
-- JavaScript endpoint extraction
-- security header checks
+- security.txt
+- HTML comments
+- JavaScript endpoints
 - interesting parameters
 - authentication clues
+- technology clues
 
-## Priority 8: Domain and IP checks
+Next:
+
+- better JavaScript endpoint extraction
+- better API route detection
+- better authentication clues
+- better security header explanations
+- better framework detection from multiple indicators
+
+## Priority 5: Improve crypto analysis
+
+Current:
+
+- Base64
+- Base32
+- Base58
+- Base85
+- hex
+- URL encoding
+- ROT13
+- Caesar-style shifts
+- JWT
+- compressed blob attempts
+- XOR candidates
+- hash identification
+
+Next:
+
+- better branch quality scoring
+- better loop avoidance
+- better readable-output detection
+- basic frequency analysis
+- Vigenere candidates where practical
+- better PEM/OpenSSH handling
+
+## Priority 6: Improve GitHub analysis
+
+Current:
+
+- users
+- organizations
+- repositories
+- search
+- contributors
+- commits
+- releases
+- dependency/project files
+- repository health
+- redacted secret indicators
+
+Next:
+
+- repository timeline
+- better CI/CD review
+- better Docker/Terraform/Kubernetes clues
+- dependency file parsing
+- better secret rule configuration
+- clearer repository summary
+
+## Priority 7: Improve domain and IP summaries
 
 Current:
 
@@ -142,31 +174,30 @@ Current:
 
 Next:
 
-- better DNS summaries
-- better RDAP ownership summaries
-- better CT log cleanup
-- verify subdomain leads
-- better infrastructure summaries
+- better hosting provider summaries
+- better CDN detection
+- better mail provider summaries
+- DNSSEC summary
+- wildcard DNS check
+- certificate summary cleanup
+- ownership summary cleanup
 
-## Priority 9: GitHub checks
+## Priority 8: Improve reports
 
-Current:
+Current reports show:
 
-- users
-- organizations
-- repositories
-- search
-- contributors
-- commits
-- redacted secret indicators
+- detected target type
+- summary
+- findings
+- next steps
 
 Next:
 
-- repository timeline
-- dependency file parsing
-- GitHub Actions checks
-- Docker/Terraform/Kubernetes clues
-- better secret rule configuration
+- better grouping of findings
+- cleaner HTML reports
+- better JSON structure for automation
+- timeline section when useful
+- fewer noisy details by default
 
 ## Lower priority
 
@@ -177,7 +208,5 @@ These can wait:
 - Censys
 - SecurityTrails
 - external tool integrations
-- AI summaries
-- LLM agents
 
 First, make the default command genuinely useful.

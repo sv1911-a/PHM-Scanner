@@ -3,13 +3,13 @@ requires = ["setuptools>=68"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "spectre-cyber"
+name = "phm-scanner"
 version = "0.1.3"
 description = "Command-line tool for first-pass cybersecurity analysis"
 readme = "README.md"
 requires-python = ">=3.10"
 license = {text = "MIT"}
-authors = [{name = "SPECTRE Maintainer"}]
+authors = [{name = "PHM Maintainer"}]
 keywords = ["cybersecurity", "forensics", "osint", "reconnaissance", "ctf", "cryptography", "malware-analysis"]
 classifiers = [
   "Development Status :: 3 - Alpha",
@@ -26,14 +26,14 @@ dns = ["dnspython>=2.6"]
 dev = []
 
 [project.urls]
-Homepage = "https://github.com/sv1911-a/Spectre"
-Documentation = "https://github.com/sv1911-a/Spectre/tree/main/docs"
-Issues = "https://github.com/sv1911-a/Spectre/issues"
-Source = "https://github.com/sv1911-a/Spectre"
+Homepage = "https://github.com/sv1911-a/PHM-Scanner"
+Documentation = "https://github.com/sv1911-a/PHM-Scanner/tree/main/docs"
+Issues = "https://github.com/sv1911-a/PHM-Scanner/issues"
+Source = "https://github.com/sv1911-a/PHM-Scanner"
 
 [project.scripts]
-spectre = "spectre.cli:main"
+phm = "phm.cli:main"
 
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["spectre*"]
+include = ["phm*"]

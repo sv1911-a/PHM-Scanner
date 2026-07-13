@@ -1,6 +1,6 @@
 import unittest
 
-from spectre.crypto_engine import SmartCryptoEngine
+from phm.crypto_engine import SmartCryptoEngine
 
 
 class SmartCryptoEngineTests(unittest.TestCase):

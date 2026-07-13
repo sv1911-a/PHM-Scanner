@@ -2,7 +2,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from spectre.analysis.file.native import analyze_file, detect_signatures, extract_strings, shannon_entropy
+from phm.analysis.file.native import analyze_file, detect_signatures, extract_strings, shannon_entropy
 
 
 class FileAnalysisTests(unittest.TestCase):

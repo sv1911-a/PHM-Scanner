@@ -34,5 +34,5 @@ jobs:
 
       - name: Smoke test CLI
         run: |
-          spectre --list-plugins
-          spectre analyze SGVsbG8= --format json
+          phm --list-plugins
+          phm analyze SGVsbG8= --format json

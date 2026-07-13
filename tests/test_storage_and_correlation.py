@@ -2,9 +2,9 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from spectre.core.correlation import build_relationship_graph
-from spectre.core.models import Category, Evidence, Finding, InvestigationReport, PluginResult
-from spectre.core.storage import InvestigationStore
+from phm.core.correlation import build_relationship_graph
+from phm.core.models import Category, Evidence, Finding, InvestigationReport, PluginResult
+from phm.core.storage import InvestigationStore
 
 
 class StorageAndCorrelationTests(unittest.TestCase):
@@ -35,7 +35,7 @@ class StorageAndCorrelationTests(unittest.TestCase):
 
     def test_storage_roundtrip(self):
         with tempfile.TemporaryDirectory() as directory:
-            db_path = Path(directory) / "spectre.db"
+            db_path = Path(directory) / "phm.db"
             store = InvestigationStore(db_path)
             investigation_id = store.save(self.sample_report())
             rows = store.list()

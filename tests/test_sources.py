@@ -2,11 +2,11 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from spectre.sources.cache import SourceCache
-from spectre.sources.common import is_domain, normalize_domain
-from spectre.sources.crtsh.adapter import CRTSHAdapter
-from spectre.sources.github.adapter import parse_repo_slug, scan_text_for_secrets, technology_hints
-from spectre.sources.wayback.adapter import WaybackAdapter
+from phm.sources.cache import SourceCache
+from phm.sources.common import is_domain, normalize_domain
+from phm.sources.crtsh.adapter import CRTSHAdapter
+from phm.sources.github.adapter import parse_repo_slug, scan_text_for_secrets, technology_hints
+from phm.sources.wayback.adapter import WaybackAdapter
 
 
 class SourceAdapterTests(unittest.TestCase):

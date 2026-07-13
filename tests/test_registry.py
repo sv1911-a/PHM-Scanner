@@ -1,6 +1,6 @@
 import unittest
 
-from spectre.core.registry import registry
+from phm.core.registry import registry
 
 
 class RegistryTests(unittest.TestCase):

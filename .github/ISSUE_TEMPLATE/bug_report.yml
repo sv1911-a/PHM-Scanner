@@ -16,14 +16,14 @@ body:
       label: How to reproduce
       description: Include the command you ran and a small sample input if safe.
       placeholder: |
-        spectre analyze ...
+        phm analyze ...
     validations:
       required: true
   - type: input
     id: version
     attributes:
       label: Version or commit
-      placeholder: 0.1.0 / commit hash
+      placeholder: 0.1.3 / commit hash
   - type: textarea
     id: expected
     attributes:

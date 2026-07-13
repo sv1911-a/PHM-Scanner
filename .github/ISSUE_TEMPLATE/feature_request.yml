@@ -14,7 +14,7 @@ body:
     id: solution
     attributes:
       label: Proposed solution
-      description: What should SPECTRE do?
+      description: What should PHM do?
     validations:
       required: true
   - type: dropdown
@@ -35,4 +35,4 @@ body:
     id: example
     attributes:
       label: Example command or workflow
-      placeholder: spectre analyze <target>
+      placeholder: phm analyze <target>

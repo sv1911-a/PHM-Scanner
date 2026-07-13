@@ -1,7 +1,7 @@
 import unittest
 
-from spectre.core.models import Category, TargetContext
-from spectre.plugins.technical.technology_fingerprint import TechnologyFingerprintPlugin
+from phm.core.models import Category, TargetContext
+from phm.plugins.technical.technology_fingerprint import TechnologyFingerprintPlugin
 
 
 class TechnologyFingerprintTests(unittest.TestCase):

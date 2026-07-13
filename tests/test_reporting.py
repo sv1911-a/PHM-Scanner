@@ -1,7 +1,7 @@
 import unittest
 
-from spectre.core.models import Category, Evidence, Finding, InvestigationReport, PluginResult
-from spectre.core.reporting import render_report
+from phm.core.models import Category, Evidence, Finding, InvestigationReport, PluginResult
+from phm.core.reporting import render_report
 
 
 class ReportingTests(unittest.TestCase):

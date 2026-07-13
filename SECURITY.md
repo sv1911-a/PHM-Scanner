@@ -1,10 +1,10 @@
 # Security Policy
 
-SPECTRE is intended for authorized cybersecurity analysis, education, research, forensics, and CTF use.
+PHM-Scanner is intended for authorized cybersecurity analysis, education, research, forensics, and CTF use.
 
 ## Reporting a vulnerability
 
-If you find a security issue in SPECTRE, please do not open a public issue with exploit details.
+If you find a security issue in PHM, please do not open a public issue with exploit details.
 
 Instead, report it privately to the project maintainer. If no private contact is listed on the repository yet, open a minimal public issue saying that you would like to report a security vulnerability, without including sensitive details.
 
@@ -30,4 +30,4 @@ Security issues include:
 
 ## Responsible use
 
-Use SPECTRE only on systems, files, accounts, and data you are authorized to analyze.
+Use PHM only on systems, files, accounts, and data you are authorized to analyze.

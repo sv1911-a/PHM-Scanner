@@ -1,18 +1,18 @@
-# Spectre Vision
+# PHM-Scanner Vision
 
-Spectre is a command-line tool that analyzes cybersecurity targets and performs the first steps of an investigation automatically.
+PHM-Scanner is a command-line tool that analyzes cybersecurity targets and performs the first steps of an investigation automatically.
 
 The main command is:
 
 ```bash
-spectre analyze <target>
+phm analyze <target>
 ```
 
-The user gives Spectre something. Spectre figures out what it is, runs useful checks, summarizes what matters, and suggests what to investigate next.
+The user gives PHM something. PHM figures out what it is, runs useful checks, summarizes what matters, and suggests what to investigate next.
 
-## What problem does Spectre solve?
+## What problem does PHM solve?
 
-Security work often starts with the same boring questions:
+Security work often starts with the same questions:
 
 ```text
 What is this?
@@ -22,57 +22,56 @@ What should I check next?
 
 A file needs hashes and strings.
 
-A domain needs DNS, certificates, and web checks.
+A domain needs DNS, certificates, and ownership checks.
+
+A website needs headers, technologies, robots.txt, sitemap, and endpoints.
 
 A hash needs identification.
 
 Encoded text needs decoding attempts.
 
-A website needs headers, technologies, robots.txt, sitemap, and endpoints.
+PHM-Scanner handles that first pass so the user can focus on the real problem.
 
-Spectre should handle that first pass so the user can focus on the real problem.
-
-## What Spectre should feel like
+## What PHM-Scanner should feel like
 
 ```bash
-spectre analyze suspicious.exe
+phm analyze suspicious.exe
 ```
 
-Spectre should answer:
+PHM-Scanner should answer:
 
-- What kind of file is it?
-- What are its hashes?
-- Are there useful strings?
-- Are there URLs or domains inside?
-- What should I inspect next?
+- what kind of file is it?
+- what are its hashes?
+- are there useful strings?
+- are there URLs, domains, or secrets inside?
+- should I open it in a reverse engineering tool?
 
 ```bash
-spectre analyze example.com
+phm analyze example.com
 ```
 
-Spectre should answer:
+PHM-Scanner should answer:
 
-- What DNS records exist?
-- Who owns it?
-- What certificates are visible?
-- Is there a public website?
-- What should I check next?
+- what DNS records exist?
+- who owns it?
+- what certificates are visible?
+- is there a public website?
+- what should I check next?
 
-## What Spectre is not
+## What PHM-Scanner is not
 
-Spectre is not:
+PHM-Scanner is not:
 
-- an AI assistant
 - an auto-solver
 - a replacement for analysts
-- a wrapper around existing tools
+- a replacement for specialist tools
 - a dashboard for third-party OSINT platforms
 
-Spectre should help users work faster, not pretend to think for them.
+PHM-Scanner should help users work faster, not pretend to think for them.
 
 ## Design rules
 
-Spectre should:
+PHM should:
 
 - choose useful checks automatically
 - keep the main command simple
@@ -82,81 +81,24 @@ Spectre should:
 - avoid noisy output by default
 - show raw details only when the user asks for them
 
-## Reverse engineering
+## Development focus
 
-Spectre should not replace Ghidra, Binary Ninja, or IDA.
+Do not add new areas unless there is a strong reason.
 
-It should do quick triage:
+Improve the current areas first:
 
-- file type
-- hashes
-- strings
-- entropy
-- interesting URLs or domains
-- possible protections
-- suspicious clues
-
-The goal is to help the analyst know where to look next.
-
-## Web security
-
-Spectre should combine common web checks:
-
-- DNS
-- TLS certificates
-- headers
-- cookies
-- technologies
-- robots.txt
-- sitemap.xml
-- JavaScript endpoints
-- common configuration clues
-
-The user should not need to manually chain many small utilities for basic reconnaissance.
-
-## Crypto
-
-Spectre should remove repetitive decoding work.
-
-It should help with:
-
-- Base64
-- hex
-- URL encoding
-- ROT/Caesar-style text
-- XOR guesses
-- hash identification
-- multi-layer decoding
-
-Advanced cryptanalysis still belongs to the analyst.
-
-## OSINT
-
-Spectre should show useful pivots, not collect everything possible.
-
-Good output should say:
-
-- what was found
-- why it might matter
-- what to investigate next
-
-## CTFs and real investigations
-
-Do not build separate CTF-only features.
-
-Build useful security checks.
-
-Good file, crypto, web, and binary analysis helps:
-
-- CTF players
-- penetration testers
-- incident responders
-- forensic analysts
-- security researchers
+- crypto decoding
+- file analysis
+- binary triage
+- web analysis
+- GitHub repository review
+- infrastructure summaries
+- finding extraction
+- reporting
 
 ## Success criteria
 
-A user should finish using Spectre thinking:
+A user should finish using PHM-Scanner thinking:
 
 ```text
 That saved me time.
@@ -164,5 +106,3 @@ I did not have to remember ten tools.
 It showed me where to look next.
 I will keep this installed.
 ```
-
-That is the standard for new features.

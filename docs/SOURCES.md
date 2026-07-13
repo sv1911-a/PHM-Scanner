@@ -1,10 +1,10 @@
-# Spectre Lookups
+# PHM-Scanner Lookups
 
-Spectre should not become a dashboard for other OSINT tools.
+PHM-Scanner should not become a dashboard for other OSINT tools.
 
-Most analysis should happen inside Spectre.
+Most analysis should happen inside PHM.
 
-But some data must come from public sources because they are the real source of truth.
+Some data must come from public sources because they are the real source of the information.
 
 ## Good public lookups
 
@@ -23,7 +23,7 @@ These are acceptable:
 
 ## Current lookups
 
-Spectre currently has code for:
+PHM-Scanner currently supports:
 
 ```text
 DNS
@@ -36,7 +36,7 @@ Reverse DNS
 GitHub
 ```
 
-These are used to collect real public data, not to outsource the analysis.
+These are used to collect real public data, not to outsource analysis.
 
 ## Local checks come first
 
@@ -49,16 +49,7 @@ These work without the internet:
 - file type detection
 - entropy calculation
 
-Future local checks should include:
-
-- EXIF parsing
-- PDF metadata parsing
-- Office document metadata parsing
-- ZIP parsing
-- PE parsing
-- ELF parsing
-- Mach-O parsing
-- JavaScript endpoint extraction
+Future improvements should deepen these checks before adding more external services.
 
 ## Optional external services
 
@@ -73,10 +64,10 @@ They should be optional extras only.
 
 ## Cache
 
-Spectre can cache lookup results:
+PHM can cache lookup results:
 
 ```bash
-spectre analyze example.com --cache --cache-ttl 3600
+phm analyze example.com --cache --cache-ttl 3600
 ```
 
 Default cache path:

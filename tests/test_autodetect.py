@@ -2,8 +2,8 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from spectre.core.autodetect import plan_analysis
-from spectre.core.models import Category
+from phm.core.autodetect import plan_analysis
+from phm.core.models import Category
 
 
 class AutoDetectTests(unittest.TestCase):

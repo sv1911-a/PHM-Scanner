@@ -1,48 +1,59 @@
-# Spectre
+# PHM-Scanner
 
-Spectre is a command-line tool that analyzes cybersecurity targets and performs the first steps of an investigation automatically.
+PHM-Scanner is a command-line tool that analyzes cybersecurity targets and performs the first steps of an investigation automatically.
 
-Give it a file, website, IP address, domain, binary, image, hash, GitHub repository, or encoded text. Spectre checks what it is, pulls out the useful details, summarizes what matters, and suggests what to investigate next.
+Give it a file, website, IP address, domain, binary, image, hash, GitHub repository, or encoded text. PHM checks what it is, pulls out useful details, summarizes what matters, and suggests what to investigate next.
 
 ```bash
-spectre analyze <target>
+phm analyze <target>
 ```
+
+## Projekt Hail Mary
+
+Yes, it's a Ryan Gosling reference.
+
+No, this tool won't solve astrophysics problems.
+
+**Disclaimer:** Projekt Hail Mary is an independent open-source cybersecurity project. It is not affiliated with, endorsed by, sponsored by, or otherwise associated with Andy Weir, Project Hail Mary, Amazon MGM Studios, Sony Pictures, Ryan Gosling, or any related publishers, authors, production companies, or rights holders. The name is used solely as a lighthearted internal codename and reference.
 
 ## Why use it?
 
-Spectre saves you from opening five different tools just to understand one target.
+PHM saves time during the first pass of an investigation.
+
+Instead of switching between several tools just to understand a target, you can start with one command and get a clean report.
 
 It is useful for:
 
 - CTFs
+- OSINT investigations
 - penetration testing
 - digital forensics
 - malware triage
-- OSINT
 - security research
 
-Spectre does not try to replace the analyst. It handles the repetitive first pass so you can get to the interesting part faster.
+PHM does not replace specialist tools like Ghidra, Burp Suite, CyberChef, Wireshark, or Nmap. It helps you decide what is worth opening in those tools.
 
 ## Quick examples
 
 ```bash
-spectre analyze challenge.zip
-spectre analyze suspicious.exe
-spectre analyze image.jpg
-spectre analyze example.com
-spectre analyze https://example.com
-spectre analyze 8.8.8.8
-spectre analyze person@example.com
-spectre analyze 5d41402abc4b2a76b9719d911017c592
-spectre analyze SGVsbG8=
+phm analyze challenge.zip
+phm analyze suspicious.exe
+phm analyze image.jpg
+phm analyze example.com
+phm analyze https://example.com
+phm analyze 8.8.8.8
+phm analyze person@example.com
+phm analyze 5d41402abc4b2a76b9719d911017c592
+phm analyze SGVsbG8=
 ```
 
 Example output style:
 
 ```text
-Spectre Report :: suspicious.exe
+PHM Report :: suspicious.exe
 ================================
-Detected: file (99%)
+Detected:
+  file
 
 Summary
 -------
@@ -50,6 +61,7 @@ File: suspicious.exe
 Type: DOS/PE executable
 SHA256: ...
 Strings: 42
+Extracted indicators: url: 1, domain: 1
 
 Interesting findings:
   - Executable/binary file detected
@@ -75,93 +87,89 @@ From the project folder:
 python -m pip install -e ".[dns]"
 ```
 
+When packaged, the intended install flow is:
+
+```bash
+pip install phm-scanner
+```
+
 Then run:
 
 ```bash
-spectre --help
-spectre analyze --help
-spectre analyze example.com
+phm --help
+phm --banner
+phm analyze --help
+phm analyze example.com
 ```
+
+For normal terminal output, PHM prints the Projekt Hail Mary banner before the report. Use `--no-banner` if you want a quieter terminal run:
+
+```bash
+phm analyze example.com --no-banner
+```
+
+The banner is not added to JSON, CSV, Markdown, HTML, or files written with `--output`.
 
 ## Main command
 
 Use this first:
 
 ```bash
-spectre analyze <target>
+phm analyze <target>
 ```
 
-Spectre tries to detect what you gave it and chooses useful checks.
+PHM tries to detect what you gave it and chooses useful checks.
 
 Examples:
 
 ```bash
-spectre analyze example.com
+phm analyze example.com
 ```
 
 Checks domain and network information.
 
 ```bash
-spectre analyze https://portswigger.net
+phm analyze https://portswigger.net
 ```
 
-Checks DNS, RDAP, TLS, headers, and website technology clues.
+Checks DNS, RDAP, TLS, headers, and website clues.
 
 ```bash
-spectre analyze suspicious.exe
+phm analyze suspicious.exe
 ```
 
-Checks file type, hashes, entropy, and strings.
+Checks file type, hashes, entropy, strings, and suspicious indicators.
 
 ```bash
-spectre analyze SGVsbG8=
+phm analyze SGVsbG8=
 ```
 
 Attempts decoding and shows the best result.
 
 ## Direct commands
 
-Most users should start with `spectre analyze`, but direct commands are available when you already know what you want.
-
-### Files
+Most users should start with `phm analyze`, but direct commands are available when you already know what you want.
 
 ```bash
-spectre file sample.bin
-spectre binary sample.exe
-spectre image photo.jpg
-spectre document report.pdf
-spectre archive sample.zip
-spectre metadata report.pdf
-```
-
-### Domains, IPs, and websites
-
-```bash
-spectre domain example.com
-spectre dns example.com
-spectre ip 8.8.8.8
-spectre web https://example.com
-```
-
-### Identity clues
-
-```bash
-spectre email person@example.com
-spectre username analyst
-```
-
-### Crypto and hashes
-
-```bash
-spectre hash 5d41402abc4b2a76b9719d911017c592
-spectre crypto SGVsbG8=
+phm file sample.bin
+phm binary sample.exe
+phm image photo.jpg
+phm document report.pdf
+phm archive sample.zip
+phm metadata report.pdf
+phm domain example.com
+phm dns example.com
+phm ip 8.8.8.8
+phm web https://example.com
+phm email person@example.com
+phm username analyst
+phm hash 5d41402abc4b2a76b9719d911017c592
+phm crypto SGVsbG8=
 ```
 
 ## Reports
 
-Default terminal reports are designed to be readable.
-
-They show:
+Default terminal reports show:
 
 - detected target type
 - summary
@@ -171,14 +179,14 @@ They show:
 Use `--verbose` when you want raw details:
 
 ```bash
-spectre analyze example.com --verbose
+phm analyze example.com --verbose
 ```
 
 Other formats:
 
 ```bash
-spectre analyze example.com --format json
-spectre analyze sample.pdf --format html --output report.html
+phm analyze example.com --format json
+phm analyze sample.pdf --format html --output report.html
 ```
 
 Supported formats:
@@ -192,18 +200,18 @@ Supported formats:
 ## Save investigations
 
 ```bash
-spectre analyze example.com --save
-spectre storage list
-spectre storage show 1
+phm analyze example.com --save
+phm storage list
+phm storage show 1
 ```
 
 Saved investigations use SQLite.
 
 ## What works today
 
-Spectre currently supports:
+PHM-Scanner currently supports:
 
-- target auto-detection
+- target detection
 - readable reports
 - next-step suggestions
 - file type checks
@@ -228,53 +236,34 @@ Spectre currently supports:
 - GitHub user, organization, repository, and search checks
 - Wayback Machine lookup
 
-## What Spectre is not
+## What PHM-Scanner is not
 
-Spectre is not:
+PHM-Scanner is not:
 
-- an AI assistant
 - an auto-solver
-- a wrapper around a pile of other tools
-- a replacement for Ghidra, Burp, Wireshark, or Nmap
+- a pile of wrappers around other tools
+- a replacement for specialist security tools
 
-Spectre is meant to be the first tool you run, not the only tool you ever need.
+PHM-Scanner is meant to be the first tool you run, not the only tool you ever need.
 
-## Project structure
+## Development focus
 
-Most users do not need this section.
+The priority is not to add lots of new checks.
 
-```text
-spectre/
-  cli.py          command-line interface
-  core/           report, storage, detection, and shared code
-  analysis/       local analysis code
-  sources/        public lookups such as DNS, RDAP, GitHub, and CT logs
-  plugins/        individual checks
-  tests/          unit tests
-```
+The priority is to make the existing checks deeper and more useful:
 
-## Development
+- better file analysis
+- better binary triage
+- better web analysis
+- better GitHub repository review
+- better crypto decoding
+- better infrastructure summaries
+- better reports
 
-Run tests:
-
-```bash
-python -m unittest discover -s tests -v
-```
-
-Useful docs:
-
-- `docs/VISION.md` — what Spectre is trying to become
-- `docs/NEXT_STEPS.md` — what to build next
-- `docs/MODULES.md` — planned analysis areas
-- `docs/SOURCES.md` — when internet lookups are acceptable
-- `CONTRIBUTING.md` — contribution guide
-
-## Guiding rule
-
-Every feature should answer:
+Guiding question:
 
 ```text
 Did this save the user time or reduce manual work?
 ```
 
-If not, it probably does not belong yet.
+If the answer is no, it can wait.

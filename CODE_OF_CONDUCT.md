@@ -1,6 +1,6 @@
 # Code of Conduct
 
-SPECTRE should be a welcoming project for students, researchers, defenders, CTF players, and security professionals.
+PHM-Scanner should be a welcoming project for students, researchers, defenders, CTF players, and security professionals.
 
 ## Expected behavior
 
@@ -19,4 +19,4 @@ SPECTRE should be a welcoming project for students, researchers, defenders, CTF 
 
 ## Enforcement
 
-Maintainers may close issues, reject pull requests, or block users who violate this code of conduct.
+The maintainer may close issues, reject pull requests, or block users who violate this code of conduct.

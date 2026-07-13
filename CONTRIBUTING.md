@@ -1,75 +1,45 @@
-# Contributing to SPECTRE
+# Contributing to PHM-Scanner
 
-Thanks for wanting to contribute.
+PHM-Scanner is currently a single-maintainer project.
 
-SPECTRE is focused on simple first-pass cybersecurity analysis. The main user experience should stay simple:
+Issues and pull requests are welcome, but the scope should stay focused:
 
 ```bash
-spectre analyze <target>
+phm analyze <target>
 ```
 
-The internal architecture can be modular, but the user should not need to understand it.
+The goal is to make that command more useful.
 
-## Project principles
+## Before adding something
 
-Before adding a feature, ask:
+Ask:
 
-1. Does this save time for the user?
-2. Does this reduce manual effort?
-3. Does this make the report clearer?
-4. Does this help the user know what to investigate next?
-5. Can this be implemented natively instead of wrapping another tool?
-6. Is the result repeatable and explainable?
+1. Does this save time during a real investigation or CTF?
+2. Does this improve an existing check?
+3. Does this make reports clearer?
+4. Does this reduce manual work?
+5. Can it work without adding a required external service?
 
-Avoid features that are only technically interesting but do not improve the workflow.
+If the answer is no, it can probably wait.
 
-## Development setup
+## Setup
 
 ```bash
-git clone https://github.com/<your-username>/spectre.git
-cd spectre
-python -m pip install -e ".[dev,dns]"
+git clone https://github.com/<your-username>/phm.git
+cd phm
+python -m pip install -e ".[dns]"
 python -m unittest discover -s tests -v
 ```
 
-SPECTRE currently has no required runtime dependencies beyond Python's standard library.
-Optional extras exist for better DNS support and development tools.
-
-## Running SPECTRE locally
+## Running locally
 
 ```bash
-python -m spectre.cli --list-plugins
-python -m spectre.cli analyze example.com
-python -m spectre.cli analyze README.md
-python -m spectre.cli analyze SGVsbG8=
+python -m phm.cli analyze example.com
+python -m phm.cli analyze SGVsbG8=
+python -m phm.cli analyze README.md
 ```
 
-## Adding a plugin
-
-Plugins live in `spectre/plugins/`.
-
-Every plugin should implement:
-
-```python
-detect()
-collect()
-analyze()
-report()
-```
-
-A plugin should also describe what it does when possible:
-
-```python
-module = "file"
-capability = "native_file_triage"
-consumes = ("file",)
-produces = ("hash", "string", "url")
-local_first = True
-network_required = False
-external_tool_required = False
-```
-
-## Testing
+## Tests
 
 Run all tests before opening a pull request:
 
@@ -77,19 +47,21 @@ Run all tests before opening a pull request:
 python -m unittest discover -s tests -v
 ```
 
-If you add a parser, plugin, detector, or report feature, add tests for it.
+Add tests when changing parsing, detection, reporting, or analysis behavior.
 
-## Security and ethics
+## Safety
 
-Only add features that support authorized analysis, research, education, defense, or CTF-style learning.
+Do not add features whose main purpose is credential theft, stealth, persistence, evasion, or unauthorized access.
 
-Do not add features whose primary purpose is credential theft, stealth, persistence, evasion, unauthorized access, or exploitation without clear defensive value.
+PHM-Scanner is for authorized analysis, education, research, defense, and CTF practice.
 
 ## Pull requests
 
-A good pull request should include:
+A good pull request includes:
 
-- a short explanation of the user benefit
+- what changed
+- why it helps the user
 - tests
-- documentation updates if user-facing behavior changes
-- no secrets, API keys, databases, or generated reports committed
+- documentation updates if behavior changed
+
+Do not commit secrets, API keys, databases, generated reports, or private investigation data.

@@ -1,1 +1,0 @@
-"""Built-in SPECTRE plugins."""

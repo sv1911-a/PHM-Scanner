@@ -4,7 +4,7 @@ Describe what this changes and why.
 
 ## User benefit
 
-How does this save time, reduce manual effort, improve reports, or make `spectre analyze <target>` better?
+How does this save time, reduce manual effort, improve reports, or make `phm analyze <target>` better?
 
 ## Type of change
 

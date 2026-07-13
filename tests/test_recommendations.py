@@ -1,8 +1,8 @@
 import unittest
 
-from spectre.core.models import Category, Evidence, Finding, InvestigationReport, PluginResult
-from spectre.core.artifacts import artifacts_from_report
-from spectre.core.recommendations import build_next_steps
+from phm.core.models import Category, Evidence, Finding, InvestigationReport, PluginResult
+from phm.core.artifacts import artifacts_from_report
+from phm.core.recommendations import build_next_steps
 
 
 class RecommendationTests(unittest.TestCase):

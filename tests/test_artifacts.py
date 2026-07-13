@@ -1,8 +1,8 @@
 import unittest
 
-from spectre.core.artifacts import ArtifactType, extract_artifacts, hash_type
-from spectre.core.models import Category, Evidence, Finding, InvestigationReport, PluginResult
-from spectre.core.artifacts import artifacts_from_report
+from phm.core.artifacts import ArtifactType, extract_artifacts, hash_type
+from phm.core.models import Category, Evidence, Finding, InvestigationReport, PluginResult
+from phm.core.artifacts import artifacts_from_report
 
 
 class ArtifactTests(unittest.TestCase):
