@@ -1,6 +1,6 @@
 # SPECTRE
 
-SPECTRE is a cybersecurity workflow accelerator.
+SPECTRE helps with making workflows faster.
 
 > Status: early-stage project / pre-1.0. APIs and commands may change.
 
