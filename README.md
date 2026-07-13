@@ -4,6 +4,8 @@ PHM-Scanner is a command-line tool that analyzes cybersecurity targets and perfo
 
 Give it a file, website, IP address, domain, binary, image, hash, GitHub repository, or encoded text. PHM checks what it is, pulls out useful details, summarizes what matters, and suggests what to investigate next.
 
+This is constantly being fixed/repaired, so please keep in mind the bugs and other errors that might occur
+
 ```bash
 phm analyze <target>
 ```
